@@ -3,6 +3,7 @@ package imageApproximation.errorCalculators;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static org.junit.jupiter.api.Assertions.*;
 
+import imageApproximation.steppers.shapes.ShapesForTests;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -14,8 +15,6 @@ class MeanSquareErrorCalculatorTest {
 
     private static int maxDiffPerPixel = 255 * 255; // color values range from 0 to 255, so max squared difference is 255^2
     private static MeanSquareErrorCalculator inspected;
-    private static BufferedImage WHITE;
-    private static BufferedImage BLACK;
 
 
     private static void assertApplicationSymmetricallyEquals(double expected, BufferedImage arg1, BufferedImage arg2) {
@@ -26,10 +25,6 @@ class MeanSquareErrorCalculatorTest {
     @BeforeAll
     static void setUp() {
         inspected = new MeanSquareErrorCalculator();
-        WHITE = new BufferedImage(1, 1, TYPE_INT_RGB);
-        WHITE.setRGB(0, 0, Color.WHITE.getRGB());
-        BLACK = new BufferedImage(1, 1, TYPE_INT_RGB);
-        BLACK.setRGB(0, 0, Color.BLACK.getRGB());
     }
 
     @Test
@@ -40,7 +35,7 @@ class MeanSquareErrorCalculatorTest {
 
     @Test
     void comparingAWhitePixelToABlackPixelShouldReturn255Squared() {
-        assertApplicationSymmetricallyEquals(maxDiffPerPixel, BLACK, WHITE);
+        assertApplicationSymmetricallyEquals(maxDiffPerPixel, ShapesForTests.BLACK_PIXEL, ShapesForTests.WHITE_PIXEL);
     }
 
     @Test
@@ -52,9 +47,9 @@ class MeanSquareErrorCalculatorTest {
         slightlyGreen.setRGB(0, 0, new Color(0, 1, 0).getRGB());
         slightlyBlue.setRGB(0, 0, new Color(0, 0, 1).getRGB());
 
-        assertApplicationSymmetricallyEquals(1. / 3, BLACK, slightlyRed);
-        assertApplicationSymmetricallyEquals(1. / 3, BLACK, slightlyGreen);
-        assertApplicationSymmetricallyEquals(1. / 3, BLACK, slightlyBlue);
+        assertApplicationSymmetricallyEquals(1. / 3, ShapesForTests.BLACK_PIXEL, slightlyRed);
+        assertApplicationSymmetricallyEquals(1. / 3, ShapesForTests.BLACK_PIXEL, slightlyGreen);
+        assertApplicationSymmetricallyEquals(1. / 3, ShapesForTests.BLACK_PIXEL, slightlyBlue);
     }
 
     @Test
