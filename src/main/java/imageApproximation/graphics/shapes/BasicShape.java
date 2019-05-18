@@ -13,7 +13,6 @@ public abstract class BasicShape {
     private final int x;
     private final int y;
 
-
     public BasicShape(double rotation, double scale, Color color, double opacity, int x, int y) {
         this.rotation = rotation;
         this.scale = scale;

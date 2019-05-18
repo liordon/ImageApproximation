@@ -10,7 +10,7 @@ import java.util.function.ToDoubleBiFunction;
 public class RandomBasicShapeStepper {
     private final ToDoubleBiFunction<ImageWrapper, ImageWrapper> scoreFunction;
     private final ImageWrapper targetImage;
-    double score;
+    private double score;
     private ImageWrapper currentState;
 
     public RandomBasicShapeStepper(ImageWrapper targetImage, ToDoubleBiFunction<ImageWrapper, ImageWrapper> scoreFunction) {
