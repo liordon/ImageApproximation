@@ -1,17 +1,18 @@
 package imageApproximation.errorCalculators;
 
+import imageApproximation.graphics.ImageWrapper;
+
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.function.ToDoubleBiFunction;
 
-public class MeanSquareErrorCalculator implements ToDoubleBiFunction<BufferedImage, BufferedImage> {
+public class MeanSquareErrorCalculator implements ToDoubleBiFunction<ImageWrapper, ImageWrapper> {
     private enum ColorChannel {
         RED,
         GREEN,
         BLUE
     }
 
-    public double applyAsDouble(BufferedImage original, BufferedImage target) {
+    public double applyAsDouble(ImageWrapper original, ImageWrapper target) {
         if (original.getWidth() != target.getWidth()
                 || original.getHeight() != target.getHeight()) {
             throw new IllegalArgumentException(String.format("different image dimensions: (%d,%d) vs (%d,%d)",
@@ -21,10 +22,8 @@ public class MeanSquareErrorCalculator implements ToDoubleBiFunction<BufferedIma
         double sum = 0;
         for (int i = 0; i < original.getWidth(); i++) {
             for (int j = 0; j < original.getHeight(); j++) {
-                int originalRGB = original.getRGB(i, j);
-                int targetRGB = target.getRGB(i, j);
                 for (ColorChannel channel : ColorChannel.values()) {
-                    int channelDiff = getColorOfChannel(originalRGB, targetRGB, channel);
+                    int channelDiff = getColorOfChannel(original.getColor(i, j), target.getColor(i, j), channel);
                     sum += Math.pow(channelDiff, 2.);
                 }
             }
@@ -32,9 +31,7 @@ public class MeanSquareErrorCalculator implements ToDoubleBiFunction<BufferedIma
         return sum / 3. / (original.getWidth() * original.getHeight());
     }
 
-    private int getColorOfChannel(int originalRGB, int targetRGB, ColorChannel channel) {
-        Color originalColor = new Color(originalRGB);
-        Color targetColor = new Color(targetRGB);
+    private int getColorOfChannel(Color originalColor, Color targetColor, ColorChannel channel) {
         switch (channel) {
             case RED:
                 return originalColor.getRed() - targetColor.getRed();

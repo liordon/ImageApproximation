@@ -1,21 +1,21 @@
 package imageApproximation.steppers;
 
-import imageApproximation.steppers.shapes.BasicCircle;
-import imageApproximation.steppers.shapes.ShapeDrawer;
+import imageApproximation.graphics.ImageWrapper;
+import imageApproximation.graphics.shapes.BasicCircle;
+import imageApproximation.graphics.shapes.ShapeDrawer;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.function.ToDoubleBiFunction;
 
 public class RandomBasicShapeStepper {
-    private final ToDoubleBiFunction<BufferedImage, BufferedImage> scoreFunction;
-    private final BufferedImage targetImage;
+    private final ToDoubleBiFunction<ImageWrapper, ImageWrapper> scoreFunction;
+    private final ImageWrapper targetImage;
     double score;
-    private BufferedImage currentState;
+    private ImageWrapper currentState;
 
-    public RandomBasicShapeStepper(BufferedImage targetImage, ToDoubleBiFunction<BufferedImage, BufferedImage> scoreFunction) {
+    public RandomBasicShapeStepper(ImageWrapper targetImage, ToDoubleBiFunction<ImageWrapper, ImageWrapper> scoreFunction) {
         this.targetImage = targetImage;
-        this.currentState = new BufferedImage(targetImage.getWidth(), targetImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        this.currentState = new ImageWrapper(targetImage.getWidth(), targetImage.getHeight());
         this.scoreFunction = scoreFunction;
         this.score = scoreFunction.applyAsDouble(currentState, targetImage);
     }
@@ -29,11 +29,11 @@ public class RandomBasicShapeStepper {
         score = scoreFunction.applyAsDouble(currentState, targetImage);
     }
 
-    public BufferedImage getCurrentState() {
+    public ImageWrapper getCurrentState() {
         return currentState;
     }
 
-    public void setCurrentState(BufferedImage currentState) {
+    public void setCurrentState(ImageWrapper currentState) {
         this.currentState = currentState;
     }
 }

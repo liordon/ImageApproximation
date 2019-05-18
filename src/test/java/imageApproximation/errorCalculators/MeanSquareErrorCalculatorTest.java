@@ -1,14 +1,13 @@
 package imageApproximation.errorCalculators;
 
-import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static org.junit.jupiter.api.Assertions.*;
 
-import imageApproximation.steppers.shapes.ShapesForTests;
+import imageApproximation.graphics.ImageWrapper;
+import imageApproximation.graphics.shapes.GraphicsForTests;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 
 class MeanSquareErrorCalculatorTest {
@@ -17,7 +16,7 @@ class MeanSquareErrorCalculatorTest {
     private static MeanSquareErrorCalculator inspected;
 
 
-    private static void assertApplicationSymmetricallyEquals(double expected, BufferedImage arg1, BufferedImage arg2) {
+    private static void assertApplicationSymmetricallyEquals(double expected, ImageWrapper arg1, ImageWrapper arg2) {
         assertEquals(expected, inspected.applyAsDouble(arg1, arg2));
         assertEquals(expected, inspected.applyAsDouble(arg2, arg1));
     }
@@ -29,49 +28,49 @@ class MeanSquareErrorCalculatorTest {
 
     @Test
     void comparingAnImageToItselfShouldReturnZero() {
-        BufferedImage example = new BufferedImage(1, 1, TYPE_INT_RGB);
+        ImageWrapper example = new ImageWrapper(1, 1);
         assertApplicationSymmetricallyEquals(0, example, example);
     }
 
     @Test
     void comparingAWhitePixelToABlackPixelShouldReturn255Squared() {
-        assertApplicationSymmetricallyEquals(maxDiffPerPixel, ShapesForTests.BLACK_PIXEL, ShapesForTests.WHITE_PIXEL);
+        assertApplicationSymmetricallyEquals(maxDiffPerPixel, GraphicsForTests.BLACK_PIXEL, GraphicsForTests.WHITE_PIXEL);
     }
 
     @Test
     void comparingABlackPixelToAPixelValued1InASingleColorIsAlwaysOneThird() {
-        BufferedImage slightlyRed = new BufferedImage(1, 1, TYPE_INT_RGB);
-        BufferedImage slightlyGreen = new BufferedImage(1, 1, TYPE_INT_RGB);
-        BufferedImage slightlyBlue = new BufferedImage(1, 1, TYPE_INT_RGB);
-        slightlyRed.setRGB(0, 0, new Color(1, 0, 0).getRGB());
-        slightlyGreen.setRGB(0, 0, new Color(0, 1, 0).getRGB());
-        slightlyBlue.setRGB(0, 0, new Color(0, 0, 1).getRGB());
+        ImageWrapper slightlyRed = new ImageWrapper(1, 1);
+        ImageWrapper slightlyGreen = new ImageWrapper(1, 1);
+        ImageWrapper slightlyBlue = new ImageWrapper(1, 1);
+        slightlyRed.setRGB(0, 0, new Color(1, 0, 0));
+        slightlyGreen.setRGB(0, 0, new Color(0, 1, 0));
+        slightlyBlue.setRGB(0, 0, new Color(0, 0, 1));
 
-        assertApplicationSymmetricallyEquals(1. / 3, ShapesForTests.BLACK_PIXEL, slightlyRed);
-        assertApplicationSymmetricallyEquals(1. / 3, ShapesForTests.BLACK_PIXEL, slightlyGreen);
-        assertApplicationSymmetricallyEquals(1. / 3, ShapesForTests.BLACK_PIXEL, slightlyBlue);
+        assertApplicationSymmetricallyEquals(1. / 3, GraphicsForTests.BLACK_PIXEL, slightlyRed);
+        assertApplicationSymmetricallyEquals(1. / 3, GraphicsForTests.BLACK_PIXEL, slightlyGreen);
+        assertApplicationSymmetricallyEquals(1. / 3, GraphicsForTests.BLACK_PIXEL, slightlyBlue);
     }
 
     @Test
     void comparing2ImagesWithDifferentSizesThrowsException() {
         assertThrows(IllegalArgumentException.class, () ->
-                inspected.applyAsDouble(new BufferedImage(1, 2, TYPE_INT_RGB),
-                        new BufferedImage(1, 1, TYPE_INT_RGB))
+                inspected.applyAsDouble(new ImageWrapper(1, 2),
+                        new ImageWrapper(1, 1))
         );
         assertThrows(IllegalArgumentException.class, () ->
-                inspected.applyAsDouble(new BufferedImage(2, 1, TYPE_INT_RGB),
-                        new BufferedImage(1, 1, TYPE_INT_RGB))
+                inspected.applyAsDouble(new ImageWrapper(2, 1),
+                        new ImageWrapper(1, 1))
         );
     }
 
     @Test
     void comparingBlackAndWhitePixelsToBlackAndBlackPixelsYieldsHalfOfMaxPossibleDifference() {
-        BufferedImage blackAndWhite = new BufferedImage(1, 2, TYPE_INT_RGB);
-        BufferedImage blackAndBlack = new BufferedImage(1, 2, TYPE_INT_RGB);
-        blackAndWhite.setRGB(0, 0, Color.BLACK.getRGB());
-        blackAndWhite.setRGB(0, 1, Color.WHITE.getRGB());
-        blackAndBlack.setRGB(0, 0, Color.BLACK.getRGB());
-        blackAndBlack.setRGB(0, 1, Color.BLACK.getRGB());
+        ImageWrapper blackAndWhite = new ImageWrapper(1, 2);
+        ImageWrapper blackAndBlack = new ImageWrapper(1, 2);
+        blackAndWhite.setRGB(0, 0, Color.BLACK);
+        blackAndWhite.setRGB(0, 1, Color.WHITE);
+        blackAndBlack.setRGB(0, 0, Color.BLACK);
+        blackAndBlack.setRGB(0, 1, Color.BLACK);
 
         assertApplicationSymmetricallyEquals(maxDiffPerPixel / 2., blackAndBlack, blackAndWhite);
     }

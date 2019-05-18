@@ -1,22 +1,22 @@
 package imageApproximation.steppers;
 
-import static imageApproximation.steppers.shapes.ShapesForTests.WHITE_PIXEL;
-import static java.awt.image.BufferedImage.TYPE_INT_RGB;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+import imageApproximation.graphics.ImageWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.awt.image.BufferedImage;
 import java.util.function.ToDoubleBiFunction;
+
+import static imageApproximation.graphics.shapes.GraphicsForTests.WHITE_PIXEL;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 
 class RandomBasicShapeStepperTest {
 
     private RandomBasicShapeStepper inspected;
-    private ToDoubleBiFunction<BufferedImage, BufferedImage> mockScoreFunction;
+    private ToDoubleBiFunction<ImageWrapper, ImageWrapper> mockScoreFunction;
 
     @BeforeEach
     void setUp() {
@@ -32,12 +32,12 @@ class RandomBasicShapeStepperTest {
 
     @Test
     void canReturnCurrentStateForInspection() {
-        assertEquals(BufferedImage.class, inspected.getCurrentState().getClass());
+        assertEquals(ImageWrapper.class, inspected.getCurrentState().getClass());
     }
 
     @Test
     void stateImageDimensionsEqualTargetImageDimensions() {
-        BufferedImage someTarget = new BufferedImage(4, 2, TYPE_INT_RGB);
+        ImageWrapper someTarget = new ImageWrapper(4, 2);
         inspected = new RandomBasicShapeStepper(someTarget, mockScoreFunction);
         assertEquals(someTarget.getWidth(), inspected.getCurrentState().getWidth());
         assertEquals(someTarget.getHeight(), inspected.getCurrentState().getHeight());
@@ -56,7 +56,7 @@ class RandomBasicShapeStepperTest {
 
     @Test
     void whenMakingAStepTowardsTargetImageCurrentStateIsChanged() {
-        BufferedImage initialState = inspected.getCurrentState();
+        ImageWrapper initialState = inspected.getCurrentState();
 
         inspected.step();
 

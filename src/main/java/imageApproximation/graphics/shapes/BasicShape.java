@@ -1,9 +1,8 @@
-package imageApproximation.steppers.shapes;
+package imageApproximation.graphics.shapes;
 
 import javafx.util.Pair;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 public abstract class BasicShape {

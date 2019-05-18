@@ -1,11 +1,10 @@
-package imageApproximation.steppers.shapes;
+package imageApproximation.graphics.shapes;
 
 import javafx.util.Pair;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class BasicCircle extends BasicShape {
 

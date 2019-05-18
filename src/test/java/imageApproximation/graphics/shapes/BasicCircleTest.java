@@ -1,8 +1,7 @@
-package imageApproximation.steppers.shapes;
+package imageApproximation.graphics.shapes;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.sun.deploy.pings.Pings;
 import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
 
