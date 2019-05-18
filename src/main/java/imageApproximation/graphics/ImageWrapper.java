@@ -24,7 +24,7 @@ public class ImageWrapper {
     }
 
     public void setRGB(int x, int y, Color color) {
-        image.setRGB(x,y,color.getRGB());
+        image.setRGB(x, y, color.getRGB());
     }
 
     public int getWidth() {
@@ -36,6 +36,31 @@ public class ImageWrapper {
     }
 
     public Color getColor(int x, int y) {
-        return new Color(image.getRGB(x,y));
+        return new Color(image.getRGB(x, y));
+    }
+
+    /**
+     * turns out BufferedImage does not compare itself pixel by pixel so I had to make my own equality method
+     *
+     * @param other another object, preferably another ImageWrapper
+     * @return true iff other is an ImageWrapper with the same pixel content
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (other.getClass() != this.getClass()) {
+            return false;
+        } else {
+            ImageWrapper castedOther = (ImageWrapper) other;
+            if (this.image.getWidth() != castedOther.image.getWidth()
+                    || this.image.getHeight() != castedOther.image.getHeight())
+                return false;
+            for (int i = 0; i < image.getWidth(); i++) {
+                for (int j = 0; j < image.getHeight(); j++) {
+                    if (this.image.getRGB(i, j) != castedOther.image.getRGB(i, j))
+                        return false;
+                }
+            }
+            return true;
+        }
     }
 }

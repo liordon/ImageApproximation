@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 class ShapeDrawerTest {
@@ -26,20 +28,20 @@ class ShapeDrawerTest {
 
     @Test
     void canDrawSinglePixelCircleOnSinglePixelCanvas() {
-        ImageWrapper result = ShapeDrawer.draw(makeOpaqueGreenCircle(0, 0, 0), BLACK_PIXEL);
+        ImageWrapper result = ShapeDrawer.drawOne(makeOpaqueGreenCircle(0, 0, 0), BLACK_PIXEL);
         assertEquals(Color.GREEN, result.getColor(0, 0));
     }
 
 
     @Test
     void canDrawImageThatOverflowsFromCanvas() {
-        ImageWrapper result = ShapeDrawer.draw(makeOpaqueGreenCircle(5, 0, 0), BLACK_PIXEL);
+        ImageWrapper result = ShapeDrawer.drawOne(makeOpaqueGreenCircle(5, 0, 0), BLACK_PIXEL);
         assertEquals(Color.GREEN, result.getColor(0, 0));
     }
 
     @Test
     void canDrawSinglePixelOnLargeCanvas() {
-        ImageWrapper result = ShapeDrawer.draw(makeOpaqueGreenCircle(0, MID_CANVAS_INDEX, MID_CANVAS_INDEX), emptyCanvas);
+        ImageWrapper result = ShapeDrawer.drawOne(makeOpaqueGreenCircle(0, MID_CANVAS_INDEX, MID_CANVAS_INDEX), emptyCanvas);
         for (int i = 0; i < DECENT_CANVAS_SIZE; i++) {
             for (int j = 0; j < DECENT_CANVAS_SIZE; j++) {
                 if (i == MID_CANVAS_INDEX && j == MID_CANVAS_INDEX) {
@@ -55,7 +57,7 @@ class ShapeDrawerTest {
     @Test
     void canDrawSmallCircleOnLargeCanvas() {
         ImageWrapper canvas = new ImageWrapper(DECENT_CANVAS_SIZE, DECENT_CANVAS_SIZE);
-        ImageWrapper result = ShapeDrawer.draw(makeOpaqueGreenCircle(0, MID_CANVAS_INDEX, MID_CANVAS_INDEX), canvas);
+        ImageWrapper result = ShapeDrawer.drawOne(makeOpaqueGreenCircle(0, MID_CANVAS_INDEX, MID_CANVAS_INDEX), canvas);
         for (int i = 0; i < DECENT_CANVAS_SIZE; i++) {
             for (int j = 0; j < DECENT_CANVAS_SIZE; j++) {
                 if (i == MID_CANVAS_INDEX && j == MID_CANVAS_INDEX) {
@@ -70,7 +72,7 @@ class ShapeDrawerTest {
 
     @Test
     void drawingHalfOpaquePixelChangesEachChannelByHalfDifference(){
-        ImageWrapper result = ShapeDrawer.draw(new BasicCircle(0, Color.WHITE, 0.5, 0,0), BLACK_PIXEL);
+        ImageWrapper result = ShapeDrawer.drawOne(new BasicCircle(0, Color.WHITE, 0.5, 0,0), BLACK_PIXEL);
         assertEquals(Math.round(255./2), result.getColor(0,0).getRed());
         assertEquals(Math.round(255./2), result.getColor(0,0).getGreen());
         assertEquals(Math.round(255./2), result.getColor(0,0).getBlue());
@@ -79,11 +81,11 @@ class ShapeDrawerTest {
     @Test
     void drawingACircleAffectsOnlyItsAffectedPixels(){
         BasicCircle redCircleAt00 = new BasicCircle(0, Color.RED, 1, 0, 0);
-        ImageWrapper result = ShapeDrawer.draw(redCircleAt00, emptyCanvas);
+        ImageWrapper result = ShapeDrawer.drawOne(redCircleAt00, emptyCanvas);
         BasicCircle greenCircleAt22 = new BasicCircle(1, Color.GREEN, 1, 2, 2);
-        result = ShapeDrawer.draw(greenCircleAt22, result);
+        result = ShapeDrawer.drawOne(greenCircleAt22, result);
         BasicCircle blueCircleAt66 = new BasicCircle(2, Color.BLUE, 1, 6, 6);
-        result = ShapeDrawer.draw(blueCircleAt66, result);
+        result = ShapeDrawer.drawOne(blueCircleAt66, result);
 
         for (int i = 0; i < DECENT_CANVAS_SIZE; i++) {
             for (int j = 0; j < DECENT_CANVAS_SIZE; j++) {
@@ -98,5 +100,18 @@ class ShapeDrawerTest {
                 }
             }
         }
+    }
+
+    @Test
+    void canDrawManyShapesAsBatchOperation(){
+        ImageWrapper serialResult = emptyCanvas;
+        List<BasicShape> allAppliedShapes = new ArrayList<>(3);
+        for (int i = 0; i < 3; i++) {
+            BasicCircle circle = new BasicCircle(0, Color.WHITE, 1, i, i);
+            serialResult = ShapeDrawer.drawOne(circle, serialResult);
+            allAppliedShapes.add(circle);
+        }
+
+        assertEquals(serialResult, ShapeDrawer.drawMany(allAppliedShapes, emptyCanvas));
     }
 }
