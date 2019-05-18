@@ -12,9 +12,10 @@ public class ShapeDrawer {
         WritableRaster raster = bi.copyData(null);
         return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
-    public static BufferedImage draw(BasicShape shape, BufferedImage canvas, int x, int y){
+
+    public static BufferedImage draw(BasicShape shape, BufferedImage canvas) {
         BufferedImage result = deepCopy(canvas);
-        result.setRGB(0,0, shape.getColor().getRGB());
+        result.setRGB(shape.getX(), shape.getY(), shape.getColor().getRGB());
         return result;
     }
 }

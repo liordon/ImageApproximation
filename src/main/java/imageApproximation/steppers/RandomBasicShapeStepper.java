@@ -25,7 +25,7 @@ public class RandomBasicShapeStepper {
     }
 
     public void step() {
-        currentState = ShapeDrawer.draw(new BasicCircle(0,1, Color.GREEN, 1), currentState, 0,0);
+        currentState = ShapeDrawer.draw(new BasicCircle(1, Color.GREEN, 1, 0, 0), currentState);
         score = scoreFunction.applyAsDouble(currentState, targetImage);
     }
 
