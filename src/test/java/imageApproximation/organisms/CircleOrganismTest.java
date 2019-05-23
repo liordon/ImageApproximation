@@ -1,67 +1,39 @@
 package imageApproximation.organisms;
 
-import imageApproximation.graphics.ImageWrapper;
-import imageApproximation.graphics.shapes.ShapeDrawer;
+import imageApproximation.ExcerciseConstants;
+import imageApproximation.graphics.shapes.BasicCircle;
+import imageApproximation.graphics.shapes.BasicShape;
+import imageApproximation.graphics.shapes.ShapeBounderies;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.function.ToDoubleBiFunction;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-import static imageApproximation.graphics.shapes.GraphicsForTests.WHITE_PIXEL;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 
 class CircleOrganismTest {
 
     private CircleOrganism inspected;
-    private ToDoubleBiFunction<ImageWrapper, ImageWrapper> mockScoreFunction;
+    private List<BasicShape> fullGenome1, fullGenome2;
+    private ShapeBounderies shapeBounderies = new ShapeBounderies(10, 10, 10);
+
 
     @BeforeEach
     void setUp() {
-        mockScoreFunction = mock(ToDoubleBiFunction.class);
-        when(mockScoreFunction.applyAsDouble(any(), any())).thenReturn(255 * 255.).thenReturn(0.);
-        inspected = new CircleOrganism(WHITE_PIXEL, mockScoreFunction);
-    }
+        inspected = new CircleOrganism(shapeBounderies);
+        fullGenome1 = new ArrayList<>(ExcerciseConstants.MAX_ALLOWED_SHAPES);
+        fullGenome2 = new ArrayList<>(ExcerciseConstants.MAX_ALLOWED_SHAPES);
+        for (int i = 0; i < ExcerciseConstants.MAX_ALLOWED_SHAPES; i++) {
+            fullGenome1.add(new BasicCircle(0, Color.BLACK, 0, 0, 0));
+            fullGenome2.add(new BasicCircle(0, Color.BLACK, 0, 0, 0));
+        }
 
-    @Test
-    void canCalculateDistanceBetweenCurrentStateAndTargetImage() {
-        assertEquals(255 * 255, inspected.getCurrentError());
-    }
-
-    @Test
-    void canReturnCurrentStateForInspection() {
-        assertEquals(ImageWrapper.class, inspected.getCurrentState().getClass());
-    }
-
-    @Test
-    void stateImageDimensionsEqualTargetImageDimensions() {
-        ImageWrapper someTarget = new ImageWrapper(4, 2);
-        inspected = new CircleOrganism(someTarget, mockScoreFunction);
-        assertEquals(someTarget.getWidth(), inspected.getCurrentState().getWidth());
-        assertEquals(someTarget.getHeight(), inspected.getCurrentState().getHeight());
-    }
-
-    @Test
-    void whenMakingAStepTowardsTargetImageScoreIsRecalculated() {
-        double initialScore = inspected.getCurrentError();
-        verify(mockScoreFunction, times(1)).applyAsDouble(any(), eq(WHITE_PIXEL));
-
-        inspected = (CircleOrganism) inspected.spawnMutant();
-
-        assertNotEquals(initialScore, inspected.getCurrentError());
-        verify(mockScoreFunction, times(2)).applyAsDouble(any(), eq(WHITE_PIXEL));
-    }
-
-    @Test
-    void whenMakingAStepTowardsTargetImageCurrentStateIsChanged() {
-        ImageWrapper initialState = inspected.getCurrentState();
-
-        inspected = (CircleOrganism) inspected.spawnMutant();
-
-        assertNotEquals(initialState, inspected.getCurrentState());
+        CircleOrganism.setRandom(new Random(0));
     }
 
     @Test
@@ -79,13 +51,94 @@ class CircleOrganismTest {
     }
 
     @Test
-    void drawingAllTakenStepsResultsInCurrentState(){
-        for (int i = 0; i < 10; i++) {
-            inspected = (CircleOrganism) inspected.spawnMutant();
-        }
-        ImageWrapper blank_canvas = new ImageWrapper(inspected.getCurrentState().getWidth(), inspected.getCurrentState().getHeight());
-        assertEquals(inspected.getCurrentState(), ShapeDrawer.drawMany(inspected.getGenome(), blank_canvas));
+    void mutantOrganismHasDifferentGenomeThanOriginal() {
+        assertNotEquals(inspected.getGenome(), inspected.spawnMutant().getGenome());
     }
 
+    @Test
+    void fullGenomeMutantOrganismHasDifferentGenomeThanOriginal() {
+        CircleOrganism fullGenomeOrganism = new CircleOrganism(fullGenome1, shapeBounderies);
+        assertNotEquals(fullGenomeOrganism.getGenome(), fullGenomeOrganism.spawnMutant().getGenome());
+    }
 
+    @Test
+    void mutantOfParentWithMaxSizedGenomeWillNotExceedThisSize() {
+        OrganismInterface fullGenomeOrganism = new CircleOrganism(fullGenome1, shapeBounderies).spawnMutant();
+        assertNotEquals(fullGenomeOrganism.getGenome(), fullGenomeOrganism.spawnMutant().getGenome());
+        assertTrue(fullGenomeOrganism.getGenome().size() <= ExcerciseConstants.MAX_ALLOWED_SHAPES,
+                () -> "The maximum genome size is " + ExcerciseConstants.MAX_ALLOWED_SHAPES
+                        + " but mutant's genome is sized " + fullGenomeOrganism.getGenome().size());
+    }
+
+    @Test
+    void crossBredChildRetainsHalfGenomeFromEachParent() {
+        List<BasicShape> genome1 = new ArrayList<>(2);
+        BasicCircle parent1gene1 = mock(BasicCircle.class);
+        genome1.add(parent1gene1);
+        BasicCircle parent1gene2 = mock(BasicCircle.class);
+        genome1.add(parent1gene2);
+
+        List<BasicShape> genome2 = new ArrayList<>(2);
+        BasicCircle parent2gene1 = mock(BasicCircle.class);
+        genome2.add(parent2gene1);
+        BasicCircle parent2gene2 = mock(BasicCircle.class);
+        genome2.add(parent2gene2);
+
+        CircleOrganism parent1 = new CircleOrganism(genome1, shapeBounderies);
+        CircleOrganism parent2 = new CircleOrganism(genome2, shapeBounderies);
+
+        OrganismInterface offspring1 = parent1.crossBreed(parent2);
+
+        List<BasicShape> offspring1Genome = offspring1.getGenome();
+        assertTrue(offspring1Genome.contains(parent1gene1) || offspring1Genome.contains(parent1gene2));
+        assertTrue(offspring1Genome.contains(parent2gene1) || offspring1Genome.contains(parent2gene2));
+        assertEquals(2, offspring1Genome.size());
+    }
+
+    @Test
+    void offspringOfMaxGenomeOrganismsDoesNotExceedMaxGenome() {
+        CircleOrganism parent1 = new CircleOrganism(fullGenome1, shapeBounderies);
+        CircleOrganism parent2 = new CircleOrganism(fullGenome2, shapeBounderies);
+
+        OrganismInterface offspring = parent1.crossBreed(parent2);
+
+        assertEquals(ExcerciseConstants.MAX_ALLOWED_SHAPES, offspring.getGenome().size());
+    }
+
+    @Test
+    void mutantOfFullGenomeOrganismHasBetween10and50PercentMutations() {
+        CircleOrganism parent1 = new CircleOrganism(fullGenome1, shapeBounderies);
+        OrganismInterface mutant = parent1.spawnMutant();
+
+        List<BasicShape> parentGenome = parent1.getGenome();
+        List<BasicShape> mutantGenome = mutant.getGenome();
+
+        int numberOfInheritedGenes = 0;
+        for (BasicShape gene :
+                parentGenome) {
+            if (mutantGenome.contains(gene)) {
+                numberOfInheritedGenes++;
+            }
+        }
+
+        assertTrue(numberOfInheritedGenes < ExcerciseConstants.MAX_ALLOWED_SHAPES * .9);
+        assertTrue(numberOfInheritedGenes > ExcerciseConstants.MAX_ALLOWED_SHAPES * .5);
+    }
+
+    @Test
+    void crossbreedsHaveShuffledGenomes() {
+        CircleOrganism parent1 = new CircleOrganism(fullGenome1, shapeBounderies);
+        CircleOrganism parent2 = new CircleOrganism(fullGenome2, shapeBounderies);
+
+        OrganismInterface crossbreed = parent1.crossBreed(parent2);
+
+        int numberOfGenesInPlace = 0;
+        for (int i = 0; i < ExcerciseConstants.MAX_ALLOWED_SHAPES / 2; i++) {
+            if (parent1.getGenome().get(i) == crossbreed.getGenome().get(i) ||
+                    parent2.getGenome().get(i) == crossbreed.getGenome().get(i)) {
+                numberOfGenesInPlace++;
+            }
+        }
+        assertTrue(numberOfGenesInPlace < 0.1 * ExcerciseConstants.MAX_ALLOWED_SHAPES);
+    }
 }

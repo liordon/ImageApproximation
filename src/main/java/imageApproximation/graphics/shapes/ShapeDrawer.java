@@ -38,7 +38,13 @@ public class ShapeDrawer {
     public static ImageWrapper drawMany(List<BasicShape> manyShapes, ImageWrapper canvas) {
         ImageWrapper result = ImageWrapper.deepCopy(canvas);
         for (BasicShape shape : manyShapes) {
-            result = drawOne(shape, result);
+            List<Point> relevantPixels = shape.getAffectedPixels().stream()
+                    .filter(p -> p.x >= 0 && p.y >= 0)
+                    .filter(p -> p.x < canvas.getWidth() && p.y < canvas.getHeight())
+                    .collect(Collectors.toList());
+            for (Point point : relevantPixels) {
+                drawSinglePixelFromShape(shape, result, point);
+            }
         }
         return result;
     }

@@ -1,4 +1,4 @@
-package imageApproximation.LearningAlgorithms;
+package imageApproximation.ApproximationAlgorithms;
 
 import imageApproximation.organisms.MockOrganism;
 import imageApproximation.organisms.OrganismInterface;

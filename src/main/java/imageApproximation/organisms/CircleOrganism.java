@@ -1,75 +1,88 @@
 package imageApproximation.organisms;
 
-import imageApproximation.graphics.ImageWrapper;
+import imageApproximation.ExcerciseConstants;
 import imageApproximation.graphics.shapes.BasicCircle;
 import imageApproximation.graphics.shapes.BasicShape;
-import imageApproximation.graphics.shapes.ShapeDrawer;
+import imageApproximation.graphics.shapes.ShapeBounderies;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.function.ToDoubleBiFunction;
 
 public class CircleOrganism implements OrganismInterface {
-    private final static int MAX_COLOR_VALUE = 255;
-    private final ToDoubleBiFunction<ImageWrapper, ImageWrapper> scoreFunction;
-    private final ImageWrapper targetImage;
-    private final Random random = new Random();
-    private double score;
-    private ImageWrapper currentState;
-    private final List<BasicShape> listOfAllCircles = new ArrayList<>();
+    private static Random random = new Random();
+    private final List<BasicShape> genome = new ArrayList<>();
+    private final ShapeBounderies shapeBounderies;
+    private int maximumMutantVariation = (int) Math.round(ExcerciseConstants.MAX_ALLOWED_SHAPES * .4);
+    private int minimumMutantVariation = (int) Math.round(ExcerciseConstants.MAX_ALLOWED_SHAPES * .1);
 
-    public CircleOrganism(ImageWrapper targetImage, ToDoubleBiFunction<ImageWrapper, ImageWrapper> scoreFunction) {
-        this.targetImage = targetImage;
-        this.currentState = new ImageWrapper(targetImage.getWidth(), targetImage.getHeight());
-        this.scoreFunction = scoreFunction;
-        this.score = scoreFunction.applyAsDouble(currentState, targetImage);
+    public CircleOrganism(ShapeBounderies shapeBounderies) {
+        this.shapeBounderies = shapeBounderies;
     }
 
-    public CircleOrganism(CircleOrganism other, List<BasicShape> circles) {
-        this(other.targetImage, other.scoreFunction);
-        this.listOfAllCircles.addAll(circles);
-        currentState = ShapeDrawer.drawMany(circles, currentState);
+    public CircleOrganism(CircleOrganism other, ShapeBounderies shapeBounderies) {
+        this.shapeBounderies = shapeBounderies;
+        this.genome.addAll(other.genome);
     }
 
-    public double getCurrentError() {
-        return score;
+    public CircleOrganism(List<BasicShape> circles, ShapeBounderies shapeBounderies) {
+        this.shapeBounderies = shapeBounderies;
+        this.genome.addAll(circles);
+    }
+
+    public static void setRandom(Random random) {
+        CircleOrganism.random = random;
     }
 
     @Override
     public OrganismInterface spawnMutant() {
-        BasicCircle circle = new BasicCircle(
-                random.nextInt(currentState.getWidth() * 2),
-                new Color(
-                        random.nextInt(MAX_COLOR_VALUE),
-                        random.nextInt(MAX_COLOR_VALUE),
-                        random.nextInt(MAX_COLOR_VALUE)
-                ),
-                random.nextDouble(),
-                random.nextInt(currentState.getWidth()),
-                random.nextInt(currentState.getHeight()));
-        List<BasicShape> currentSteps = getGenome();
-        currentSteps.add(circle);
-        return new CircleOrganism(this, currentSteps);
+        List<BasicShape> newGenome = new ArrayList<>(genome.size() + 1);
+        newGenome.addAll(genome);
+
+        if (genome.size() < ExcerciseConstants.MAX_ALLOWED_SHAPES) {
+            addCircleToGenome(newGenome);
+        } else {
+            for (int i = 0; i < minimumMutantVariation + random.nextInt(maximumMutantVariation); i++) {
+                newGenome.remove(random.nextInt(newGenome.size()));
+                addCircleToGenome(newGenome);
+            }
+        }
+
+        return new CircleOrganism(newGenome, shapeBounderies);
     }
 
-    public ImageWrapper getCurrentState() {
-        return currentState;
+    private void addCircleToGenome(List<BasicShape> newGenome) {
+        BasicCircle circle = new BasicCircle(
+                random.nextInt(shapeBounderies.getMaxSize()),
+                new Color(
+                        random.nextInt(ExcerciseConstants.MAX_COLOR_VALUE),
+                        random.nextInt(ExcerciseConstants.MAX_COLOR_VALUE),
+                        random.nextInt(ExcerciseConstants.MAX_COLOR_VALUE)
+                ),
+                random.nextDouble(),
+                random.nextInt(shapeBounderies.getMaxWidth()),
+                random.nextInt(shapeBounderies.getMaxHeight()));
+        newGenome.add(circle);
     }
 
     @Override
-    public java.util.List<BasicShape> getGenome() {
-        return listOfAllCircles;
+    public List<BasicShape> getGenome() {
+        return genome;
     }
 
     @Override
     public OrganismInterface cloneOrganism() {
-        return new CircleOrganism(targetImage, scoreFunction);
+        return new CircleOrganism(this, shapeBounderies);
     }
 
     @Override
     public OrganismInterface crossBreed(OrganismInterface mate) {
-        return null;
+        List<BasicShape> offspringGenome = new ArrayList<>(genome.size() + mate.getGenome().size());
+        offspringGenome.addAll(genome.subList(0, genome.size() / 2));
+        offspringGenome.addAll(mate.getGenome().subList(0, mate.getGenome().size() / 2));
+        Collections.shuffle(offspringGenome);
+        return new CircleOrganism(offspringGenome, shapeBounderies);
     }
 }

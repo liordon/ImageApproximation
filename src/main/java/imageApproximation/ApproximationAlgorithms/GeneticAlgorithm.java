@@ -1,4 +1,4 @@
-package imageApproximation.LearningAlgorithms;
+package imageApproximation.ApproximationAlgorithms;
 
 import imageApproximation.organisms.OrganismInterface;
 
@@ -14,7 +14,9 @@ public class GeneticAlgorithm {
     private final ToDoubleFunction<OrganismInterface> fitnessFunction;
     private final Comparator<OrganismInterface> comparativeFitnessFunction;
     private List<OrganismInterface> population;
+    private List<OrganismInterface> survivors;
     private OrganismInterface fittestOrganism;
+    private double highestFitness=-99999;
 
     GeneticAlgorithm(List<OrganismInterface> initialPopulation, double survivalRate, ToDoubleFunction<OrganismInterface> fitnessFunction) {
         population = initialPopulation;
@@ -33,12 +35,17 @@ public class GeneticAlgorithm {
         fittestOrganism = progenitor;
 
         population = new ArrayList<>(generationSize);
+        population = new ArrayList<>(survivorsSize);
         population.add(progenitor);
+        fittestOrganism = progenitor;
+        highestFitness = fitnessFunction.applyAsDouble(progenitor);
         for (int i = 0; i < generationSize - 1; i++) {
             OrganismInterface mutant = progenitor.spawnMutant();
             population.add(mutant);
-            if (fitnessFunction.applyAsDouble(mutant) > fitnessFunction.applyAsDouble(fittestOrganism)) {
+            double mutantFitness = fitnessFunction.applyAsDouble(mutant);
+            if (mutantFitness > highestFitness) {
                 fittestOrganism = mutant;
+                highestFitness = mutantFitness;
             }
         }
     }
@@ -84,6 +91,14 @@ public class GeneticAlgorithm {
         //step 3: fill up the remainder of the generation
         while (newGeneration.size() < generationSize){
             newGeneration.add(survivors.get(0).spawnMutant());
+        }
+
+        for (OrganismInterface organism : population) {
+            double organismFitness = fitnessFunction.applyAsDouble(organism);
+            if (organismFitness > highestFitness) {
+                fittestOrganism = organism;
+                highestFitness = organismFitness;
+            }
         }
 
         population = newGeneration;
