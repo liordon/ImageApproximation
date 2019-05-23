@@ -1,9 +1,9 @@
 package imageApproximation.organisms;
 
-import imageApproximation.ExcerciseConstants;
+import imageApproximation.ExerciseConstants;
 import imageApproximation.graphics.shapes.BasicCircle;
 import imageApproximation.graphics.shapes.BasicShape;
-import imageApproximation.graphics.shapes.ShapeBounderies;
+import imageApproximation.graphics.shapes.ShapeBoundaries;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,21 +14,21 @@ import java.util.Random;
 public class CircleOrganism implements OrganismInterface {
     private static Random random = new Random();
     private final List<BasicShape> genome = new ArrayList<>();
-    private final ShapeBounderies shapeBounderies;
-    private int maximumMutantVariation = (int) Math.round(ExcerciseConstants.MAX_ALLOWED_SHAPES * .4);
-    private int minimumMutantVariation = (int) Math.round(ExcerciseConstants.MAX_ALLOWED_SHAPES * .1);
+    private final ShapeBoundaries shapeBoundaries;
+    private int maximumMutantVariation = (int) Math.round(ExerciseConstants.MAX_ALLOWED_SHAPES * .4);
+    private int minimumMutantVariation = (int) Math.round(ExerciseConstants.MAX_ALLOWED_SHAPES * .1);
 
-    public CircleOrganism(ShapeBounderies shapeBounderies) {
-        this.shapeBounderies = shapeBounderies;
+    public CircleOrganism(ShapeBoundaries shapeBoundaries) {
+        this.shapeBoundaries = shapeBoundaries;
     }
 
-    public CircleOrganism(CircleOrganism other, ShapeBounderies shapeBounderies) {
-        this.shapeBounderies = shapeBounderies;
+    public CircleOrganism(CircleOrganism other, ShapeBoundaries shapeBoundaries) {
+        this.shapeBoundaries = shapeBoundaries;
         this.genome.addAll(other.genome);
     }
 
-    public CircleOrganism(List<BasicShape> circles, ShapeBounderies shapeBounderies) {
-        this.shapeBounderies = shapeBounderies;
+    public CircleOrganism(List<BasicShape> circles, ShapeBoundaries shapeBoundaries) {
+        this.shapeBoundaries = shapeBoundaries;
         this.genome.addAll(circles);
     }
 
@@ -41,7 +41,7 @@ public class CircleOrganism implements OrganismInterface {
         List<BasicShape> newGenome = new ArrayList<>(genome.size() + 1);
         newGenome.addAll(genome);
 
-        if (genome.size() < ExcerciseConstants.MAX_ALLOWED_SHAPES) {
+        if (genome.size() < ExerciseConstants.MAX_ALLOWED_SHAPES) {
             addCircleToGenome(newGenome);
         } else {
             for (int i = 0; i < minimumMutantVariation + random.nextInt(maximumMutantVariation); i++) {
@@ -50,20 +50,20 @@ public class CircleOrganism implements OrganismInterface {
             }
         }
 
-        return new CircleOrganism(newGenome, shapeBounderies);
+        return new CircleOrganism(newGenome, shapeBoundaries);
     }
 
     private void addCircleToGenome(List<BasicShape> newGenome) {
         BasicCircle circle = new BasicCircle(
-                random.nextInt(shapeBounderies.getMaxSize()),
+                random.nextInt(shapeBoundaries.getMaxSize()),
                 new Color(
-                        random.nextInt(ExcerciseConstants.MAX_COLOR_VALUE),
-                        random.nextInt(ExcerciseConstants.MAX_COLOR_VALUE),
-                        random.nextInt(ExcerciseConstants.MAX_COLOR_VALUE)
+                        random.nextInt(ExerciseConstants.MAX_COLOR_VALUE),
+                        random.nextInt(ExerciseConstants.MAX_COLOR_VALUE),
+                        random.nextInt(ExerciseConstants.MAX_COLOR_VALUE)
                 ),
                 random.nextDouble(),
-                random.nextInt(shapeBounderies.getMaxWidth()),
-                random.nextInt(shapeBounderies.getMaxHeight()));
+                random.nextInt(shapeBoundaries.getMaxWidth()),
+                random.nextInt(shapeBoundaries.getMaxHeight()));
         newGenome.add(circle);
     }
 
@@ -74,7 +74,7 @@ public class CircleOrganism implements OrganismInterface {
 
     @Override
     public OrganismInterface cloneOrganism() {
-        return new CircleOrganism(this, shapeBounderies);
+        return new CircleOrganism(this, shapeBoundaries);
     }
 
     @Override
@@ -83,6 +83,6 @@ public class CircleOrganism implements OrganismInterface {
         offspringGenome.addAll(genome.subList(0, genome.size() / 2));
         offspringGenome.addAll(mate.getGenome().subList(0, mate.getGenome().size() / 2));
         Collections.shuffle(offspringGenome);
-        return new CircleOrganism(offspringGenome, shapeBounderies);
+        return new CircleOrganism(offspringGenome, shapeBoundaries);
     }
 }

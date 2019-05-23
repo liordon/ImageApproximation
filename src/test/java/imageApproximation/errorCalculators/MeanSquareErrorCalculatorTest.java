@@ -23,7 +23,7 @@ class MeanSquareErrorCalculatorTest {
 
     @BeforeAll
     static void setUp() {
-        inspected = new MeanSquareErrorCalculator();
+        inspected = new MeanSquareErrorCalculator(1);
     }
 
     @Test

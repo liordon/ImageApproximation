@@ -1,11 +1,11 @@
 package imageApproximation.graphics.shapes;
 
-public class ShapeBounderies {
+public class ShapeBoundaries {
     private final int maxWidth;
     private final int maxHeight;
     private final int maxSize;
 
-    public ShapeBounderies(int maxWidth, int maxHeight, int maxSize) {
+    public ShapeBoundaries(int maxWidth, int maxHeight, int maxSize) {
         this.maxWidth = maxWidth;
         this.maxHeight = maxHeight;
         this.maxSize = maxSize;

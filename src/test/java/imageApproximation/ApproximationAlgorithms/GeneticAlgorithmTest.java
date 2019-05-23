@@ -24,21 +24,15 @@ class GeneticAlgorithmTest {
     private static OrganismInterface mockProgenitor;
     private static ToDoubleFunction<OrganismInterface> mockFitnessFunction;
     private GeneticAlgorithm inspected;
-    private static List<OrganismInterface> predeterminedPopulation;
     private static List<OrganismInterface> fittestSpecimen;
 
     @BeforeAll
     static void setupInitialPopulations() {
         mockProgenitor = makeOneGenerationMock();
 
-        predeterminedPopulation = new ArrayList<>(SIZABLE_POPULATION);
         fittestSpecimen = new ArrayList<>(SURVIVAL_SIZE);
-        for (int i = 0; i < SIZABLE_POPULATION; i++) {
-            OrganismInterface organism = makeOneGenerationMock();
-            predeterminedPopulation.add(organism);
-            if (i < SURVIVAL_SIZE) {
-                fittestSpecimen.add(organism);
-            }
+        for (int i = 0; i < SURVIVAL_SIZE; i++) {
+            fittestSpecimen.add(makeOneGenerationMock());
         }
         mockFitnessFunction = value -> (fittestSpecimen.contains(value)) ? 100 : 0;
 
@@ -54,18 +48,18 @@ class GeneticAlgorithmTest {
 
     @BeforeEach
     void setUp() {
-        inspected = new GeneticAlgorithm(predeterminedPopulation, SURVIVAL_RATE, mockFitnessFunction);
+        inspected = new GeneticAlgorithm(fittestSpecimen, 100, mockFitnessFunction);
     }
 
     @Test
-    void initiallyMutatesProgenitorIntoEntirePopulation() {
-        new GeneticAlgorithm(SIZABLE_POPULATION, 0, mockProgenitor, x -> 0);
-        verify(mockProgenitor, times(SIZABLE_POPULATION - 1)).spawnMutant();
+    void initiallyMutatesProgenitorIntoSurvivorsArray() {
+        new GeneticAlgorithm(SIZABLE_POPULATION, SURVIVAL_SIZE, mockProgenitor, x -> 0);
+        verify(mockProgenitor, times(SURVIVAL_SIZE - 1)).spawnMutant();
     }
 
     @Test
-    void canReturnEntirePopulationWhenRequested() {
-        assertEquals(SIZABLE_POPULATION, inspected.getPopulation().size());
+    void canReturnSurvivorPopulationWhenRequested() {
+        assertEquals(SURVIVAL_SIZE, inspected.getPopulation().size());
     }
 
     @Test
@@ -82,9 +76,7 @@ class GeneticAlgorithmTest {
         List<OrganismInterface> newPopulation = inspected.getPopulation();
 
         for (OrganismInterface organism : newPopulation) {
-            if (predeterminedPopulation.contains(organism)) {
-                assertTrue(fittestSpecimen.contains(organism));
-            }
+            assertTrue(fittestSpecimen.contains(organism));
         }
     }
 
@@ -92,7 +84,7 @@ class GeneticAlgorithmTest {
     void whenAdvancingAGenerationTheFittestSpecimenAreCrossBred() {
         inspected.advanceGeneration();
 
-        for (OrganismInterface organism : fittestSpecimen.subList(0, SURVIVAL_SIZE - 1)) {
+        for (OrganismInterface organism : fittestSpecimen) {
             assertTrue(inspected.getPopulation().contains(organism));
             verify(organism, atLeastOnce()).crossBreed(any());
         }
@@ -108,17 +100,18 @@ class GeneticAlgorithmTest {
     }
 
     @Test
-    void whenAdvancingAGenerationTheNewPopulationIsTheSameSizeAsBefore() {
+    void whenAdvancingAGenerationOnlyTheSurvivorsAreKept() {
         inspected.advanceGeneration();
-        assertEquals(SIZABLE_POPULATION, inspected.getPopulation().size());
+        assertEquals(SURVIVAL_SIZE, inspected.getPopulation().size());
     }
 
     @Test
     void whenAdvancingAGenerationTheNewPopulationHasNoClones() {
         //this test uses MockOrganism instead of regular mocks since mockito starts recycling mocks at some point
-        GeneticAlgorithm inspected = new GeneticAlgorithm(SIZABLE_POPULATION, 0.1, new MockOrganism(), x -> 0);
+        GeneticAlgorithm inspected =
+                new GeneticAlgorithm(SIZABLE_POPULATION, SURVIVAL_SIZE, new MockOrganism(), x -> 0);
         inspected.advanceGeneration();
         Set<OrganismInterface> populationSet = new HashSet<>(inspected.getPopulation());
-        assertEquals(SIZABLE_POPULATION, populationSet.size());
+        assertEquals(SURVIVAL_SIZE, populationSet.size());
     }
 }

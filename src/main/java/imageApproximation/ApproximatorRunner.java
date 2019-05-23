@@ -3,7 +3,7 @@ package imageApproximation;
 import imageApproximation.ApproximationAlgorithms.GeneticAlgorithm;
 import imageApproximation.errorCalculators.MeanSquareErrorCalculator;
 import imageApproximation.graphics.ImageWrapper;
-import imageApproximation.graphics.shapes.ShapeBounderies;
+import imageApproximation.graphics.shapes.ShapeBoundaries;
 import imageApproximation.graphics.shapes.ShapeDrawer;
 import imageApproximation.organisms.CircleOrganism;
 import imageApproximation.organisms.OrganismInterface;
@@ -25,25 +25,35 @@ public class ApproximatorRunner {
             System.out.println("reading image");
             ImageWrapper targetImage = new ImageWrapper(ImageIO.read(new File("src/main/resources/golden_bell-300x225.jpg")));
             System.out.println("defining fitness and boundries");
+            MeanSquareErrorCalculator meanSquareErrorCalculator = new MeanSquareErrorCalculator(20);
             ToDoubleFunction<OrganismInterface> fitnessFunction = (o) -> {
                 ImageWrapper state = ShapeDrawer.drawMany(o.getGenome(), new ImageWrapper(300, 225));
-                return -new MeanSquareErrorCalculator().applyAsDouble(state, targetImage);
+                return -meanSquareErrorCalculator.applyAsDouble(state, targetImage);
             };
 
-            ShapeBounderies bounderies = new ShapeBounderies(300 * 2, 225 * 2, 300 * 2);
-            OrganismInterface progenitor = new CircleOrganism(bounderies);
+            ShapeBoundaries boundaries = new ShapeBoundaries(300 * 2, 225 * 2, 300 * 2);
+            long startEvolutionTime = System.currentTimeMillis();
+            OrganismInterface progenitor = new CircleOrganism(boundaries);
+            for (int i = 0; i < ExerciseConstants.MAX_ALLOWED_SHAPES; i++) {
+                progenitor = progenitor.spawnMutant();
+            }
 
             System.out.println("creating initial population");
-            GeneticAlgorithm algorithm = new GeneticAlgorithm(100, 0.1, progenitor, fitnessFunction);
+            GeneticAlgorithm algorithm = new GeneticAlgorithm(100, 10, progenitor, fitnessFunction);
 
             System.out.println("starting evolution process");
             OrganismInterface fittestSpecimen = algorithm.getFittestOrganism();
             for (int i = 0; i < 10; i++) {
+                long epochStartTime = System.currentTimeMillis();
                 algorithm.advanceGeneration();
                 fittestSpecimen = algorithm.getFittestOrganism();
-                System.out.println("generation " + i + " fittest score: " + fitnessFunction.applyAsDouble(fittestSpecimen));
+                System.out.println("generation " + i + " took " +
+                        (System.currentTimeMillis() - epochStartTime) / 100 + " seconds.\nfittest score: " +
+                        fitnessFunction.applyAsDouble(fittestSpecimen));
             }
-            System.out.println("evolution finished");
+            System.out.println(
+                    "evolution finished! ant it only took " +
+                            (System.currentTimeMillis() - startEvolutionTime) / 60_000 + " minutes!");
 
             ImageIO.write(ShapeDrawer.drawMany(fittestSpecimen.getGenome(), new ImageWrapper(300, 225)).getInnerImage(), "jpg", new File("out.jpg"));
         } catch (IOException e) {

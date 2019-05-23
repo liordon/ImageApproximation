@@ -2,9 +2,7 @@ package imageApproximation.ApproximationAlgorithms;
 
 import imageApproximation.organisms.OrganismInterface;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.ToDoubleFunction;
 
 public class GeneticAlgorithm {
@@ -13,45 +11,54 @@ public class GeneticAlgorithm {
     private final int survivorsSize;
     private final ToDoubleFunction<OrganismInterface> fitnessFunction;
     private final Comparator<OrganismInterface> comparativeFitnessFunction;
-    private List<OrganismInterface> population;
     private List<OrganismInterface> survivors;
-    private OrganismInterface fittestOrganism;
-    private double highestFitness=-99999;
+    private OrganismInterface fittestOrganism, lowliestMutant;
+    private double highestFitness, lowestFitness;
 
-    GeneticAlgorithm(List<OrganismInterface> initialPopulation, double survivalRate, ToDoubleFunction<OrganismInterface> fitnessFunction) {
-        population = initialPopulation;
-        generationSize = initialPopulation.size();
-        survivorsSize = (int) Math.round(generationSize * survivalRate);
+    GeneticAlgorithm(List<OrganismInterface> initialPopulation, int generationSize,
+                     ToDoubleFunction<OrganismInterface> fitnessFunction) {
+        survivors = new ArrayList<>(initialPopulation);
+        this.generationSize = generationSize;
+        survivorsSize = initialPopulation.size();
         this.fitnessFunction = fitnessFunction;
         this.comparativeFitnessFunction = (a, b) -> (int) Math.signum(fitnessFunction.applyAsDouble((a)) - fitnessFunction.applyAsDouble(b));
+        survivors.sort(comparativeFitnessFunction);
+        fittestOrganism = survivors.get(0);
+        lowliestMutant = survivors.get(survivorsSize - 1);
+        highestFitness = fitnessFunction.applyAsDouble(fittestOrganism);
+        lowestFitness = fitnessFunction.applyAsDouble(lowliestMutant);
     }
 
-    public GeneticAlgorithm(int generationSize, double survivalRate, OrganismInterface progenitor, ToDoubleFunction<OrganismInterface> fitnessFunction) {
+    public GeneticAlgorithm(int generationSize, int survivalSize, OrganismInterface progenitor,
+                            ToDoubleFunction<OrganismInterface> fitnessFunction) {
         this.generationSize = generationSize;
-        this.survivorsSize = (int) Math.round(generationSize * survivalRate);
+        this.survivorsSize = survivalSize;
         this.fitnessFunction = fitnessFunction;
         this.comparativeFitnessFunction = (a, b) -> (int) Math.signum(fitnessFunction.applyAsDouble((a)) - fitnessFunction.applyAsDouble(b));
 
+        survivors = new ArrayList<>(survivorsSize);
+        survivors.add(progenitor);
         fittestOrganism = progenitor;
-
-        population = new ArrayList<>(generationSize);
-        population = new ArrayList<>(survivorsSize);
-        population.add(progenitor);
-        fittestOrganism = progenitor;
+        lowliestMutant = progenitor;
         highestFitness = fitnessFunction.applyAsDouble(progenitor);
-        for (int i = 0; i < generationSize - 1; i++) {
+        lowestFitness = fitnessFunction.applyAsDouble(progenitor);
+        for (int i = 0; i < survivorsSize - 1; i++) {
             OrganismInterface mutant = progenitor.spawnMutant();
-            population.add(mutant);
+            survivors.add(mutant);
             double mutantFitness = fitnessFunction.applyAsDouble(mutant);
             if (mutantFitness > highestFitness) {
                 fittestOrganism = mutant;
                 highestFitness = mutantFitness;
             }
+            if (mutantFitness < lowestFitness) {
+                lowliestMutant = mutant;
+                lowestFitness = mutantFitness;
+            }
         }
     }
 
     public List<OrganismInterface> getPopulation() {
-        return population;
+        return survivors;
     }
 
     public OrganismInterface getFittestOrganism() {
@@ -59,48 +66,49 @@ public class GeneticAlgorithm {
     }
 
     public void advanceGeneration() {
-        List<OrganismInterface> survivors = new ArrayList<>(survivorsSize);
-        for (OrganismInterface organism : population) {
-            if (survivors.size() < survivorsSize
-                    || fitnessFunction.applyAsDouble(organism) > fitnessFunction.applyAsDouble(survivors.get(survivorsSize - 1))) {
-                survivors.add(organism);
-                survivors.sort(comparativeFitnessFunction);
-            }
-        }
-
-        List<OrganismInterface> newGeneration = new ArrayList<>(generationSize);
 
         //step 1: survival of the fittest
-        newGeneration.addAll(survivors);
+        List<OrganismInterface> newGeneration = new LinkedList<>();
+        List<OrganismInterface> misfits = new LinkedList<>();
         for (OrganismInterface survivor : survivors) {
-            newGeneration.add(survivor.spawnMutant());
+            OrganismInterface mutant = survivor.spawnMutant();
+            if (fitnessFunction.applyAsDouble(mutant) > lowestFitness) {
+                newGeneration.add(mutant);
+            } else {
+                misfits.add(mutant);
+            }
         }
 
         //step 2: crossbreeds
+        crossbreeding:
         for (int i = 0; i < survivorsSize; i++) {
             for (int j = i; j < survivorsSize; j++) {
                 if (newGeneration.size() == generationSize) {
-                    break;
+                    break crossbreeding;
                 }
+                OrganismInterface crossBreed;
                 if (i != j) {
-                    newGeneration.add(survivors.get(i).crossBreed(survivors.get(j)));
+                    crossBreed = survivors.get(i).crossBreed(survivors.get(j));
+                } else if (misfits.size() > 0) {
+                    crossBreed = survivors.get(i).crossBreed(misfits.get(new Random().nextInt(misfits.size())));
+                } else {
+                    crossBreed = survivors.get(i).crossBreed(newGeneration.get(new Random().nextInt(newGeneration.size())));
+                }
+                if (fitnessFunction.applyAsDouble(crossBreed) > lowestFitness) {
+                    newGeneration.add(crossBreed);
+                } else {
+                    misfits.add(crossBreed);
                 }
             }
         }
 
-        //step 3: fill up the remainder of the generation
-        while (newGeneration.size() < generationSize){
-            newGeneration.add(survivors.get(0).spawnMutant());
-        }
-
-        for (OrganismInterface organism : population) {
-            double organismFitness = fitnessFunction.applyAsDouble(organism);
-            if (organismFitness > highestFitness) {
-                fittestOrganism = organism;
-                highestFitness = organismFitness;
-            }
-        }
-
-        population = newGeneration;
+        survivors = new ArrayList<>(survivorsSize);
+        newGeneration.addAll(survivors);
+        newGeneration.sort(comparativeFitnessFunction);
+        fittestOrganism = newGeneration.get(0);
+        highestFitness = fitnessFunction.applyAsDouble(fittestOrganism);
+        lowliestMutant = newGeneration.get(survivorsSize - 1);
+        lowestFitness = fitnessFunction.applyAsDouble(lowliestMutant);
+        survivors.addAll(newGeneration.subList(0, survivorsSize));
     }
 }
