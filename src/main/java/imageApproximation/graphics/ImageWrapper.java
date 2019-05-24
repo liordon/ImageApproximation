@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ImageWrapper {
-//    private final BufferedImage image;
     private final Color[][] image;
 
     public ImageWrapper(Color[][] image) {
@@ -84,7 +83,7 @@ public class ImageWrapper {
         BufferedImage result = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < image.length; i++) {
             for (int j = 0; j < image[0].length; j++) {
-                result.setRGB(i,j,getColor(i,j).getRGB());
+                result.setRGB(i, j, getColor(i, j).getRGB());
             }
         }
         return result;

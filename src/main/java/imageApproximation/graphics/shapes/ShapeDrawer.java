@@ -23,29 +23,36 @@ public class ShapeDrawer {
     }
 
     private static void drawSinglePixelFromShape(BasicShape shape, ImageWrapper canvas, Point point) {
-        int redDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(point.x, point.y), RED);
-        int greenDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(point.x, point.y), GREEN);
-        int blueDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(point.x, point.y), BLUE);
-        canvas.setRGB(point.x, point.y,
+        drawSinglePixelFromShape(shape, canvas, point.x, point.y);
+    }
+
+    private static void drawSinglePixelFromShape(BasicShape shape, ImageWrapper canvas, int i, int j) {
+        int redDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(i, j), RED);
+        int greenDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(i, j), GREEN);
+        int blueDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(i, j), BLUE);
+        canvas.setRGB(i, j,
                 new Color(
-                        (int) Math.round(canvas.getColor(point.x, point.y).getRed() + redDifference * shape.getOpacity()),
-                        (int) Math.round(canvas.getColor(point.x, point.y).getGreen() + greenDifference * shape.getOpacity()),
-                        (int) Math.round(canvas.getColor(point.x, point.y).getBlue() + blueDifference * shape.getOpacity()))
+                        (int) Math.round(canvas.getColor(i, j).getRed() + redDifference * shape.getOpacity()),
+                        (int) Math.round(canvas.getColor(i, j).getGreen() + greenDifference * shape.getOpacity()),
+                        (int) Math.round(canvas.getColor(i, j).getBlue() + blueDifference * shape.getOpacity()))
 
         );
     }
 
     public static ImageWrapper drawMany(List<BasicShape> manyShapes, ImageWrapper canvas) {
         ImageWrapper result = ImageWrapper.deepCopy(canvas);
-        for (BasicShape shape : manyShapes) {
-            List<Point> relevantPixels = shape.getAffectedPixels().stream()
-                    .filter(p -> p.x >= 0 && p.y >= 0)
-                    .filter(p -> p.x < canvas.getWidth() && p.y < canvas.getHeight())
-                    .collect(Collectors.toList());
-            for (Point point : relevantPixels) {
-                drawSinglePixelFromShape(shape, result, point);
+
+        for (int i = 0; i < result.getWidth(); i++) {
+            for (int j = 0; j < result.getHeight(); j++) {
+                for (BasicShape shape : manyShapes) {
+                    if (shape.contains(i, j)) {
+                        drawSinglePixelFromShape(shape, result, i, j);
+                    }
+                }
             }
         }
+
         return result;
     }
 }
+

@@ -5,11 +5,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static imageApproximation.graphics.shapes.GraphicsForTests.BLACK_PIXEL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 
 class ShapeDrawerTest {
@@ -113,5 +116,14 @@ class ShapeDrawerTest {
         }
 
         assertEquals(serialResult, ShapeDrawer.drawMany(allAppliedShapes, emptyCanvas));
+    }
+
+    @Test
+    void drawing100ShapesShouldBeLessThan50millisLong() {
+        List<BasicShape> largeEvilShapesList = new LinkedList<>();
+        for (int i = 0; i < 100; i++) {
+            largeEvilShapesList.add(new BasicCircle(1000, Color.CYAN, 0, 1000 * i, 1000 * i));
+        }
+        assertTimeout(Duration.ofMillis(50), () -> ShapeDrawer.drawMany(largeEvilShapesList, emptyCanvas));
     }
 }
