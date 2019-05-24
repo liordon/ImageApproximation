@@ -1,5 +1,6 @@
 package imageApproximation.graphics.shapes;
 
+import imageApproximation.ExerciseConstants;
 import imageApproximation.graphics.ImageWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,9 +8,10 @@ import org.junit.jupiter.api.Test;
 import java.awt.*;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
+import static imageApproximation.DifficultTestSubjects.LARGE_CIRCLE_IMAGE;
+import static imageApproximation.DifficultTestSubjects.LARGE_SHAPES_LIST;
 import static imageApproximation.graphics.shapes.GraphicsForTests.BLACK_PIXEL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
@@ -119,11 +121,20 @@ class ShapeDrawerTest {
     }
 
     @Test
-    void drawing100ShapesShouldBeLessThan50millisLong() {
-        List<BasicShape> largeEvilShapesList = new LinkedList<>();
-        for (int i = 0; i < 100; i++) {
-            largeEvilShapesList.add(new BasicCircle(1000, Color.CYAN, 0, 1000 * i, 1000 * i));
+    void canDrawASparseVersionOfLargeImage() {
+        final int sparsity = 20;
+        ImageWrapper sparseImage = ShapeDrawer
+                .drawSparsely(LARGE_SHAPES_LIST, ExerciseConstants.MAX_IMAGE_SIZE, ExerciseConstants.MAX_IMAGE_SIZE,
+                        sparsity);
+        for (int i = 0; i < ExerciseConstants.MAX_IMAGE_SIZE / sparsity; i++) {
+            for (int j = 0; j < ExerciseConstants.MAX_IMAGE_SIZE / sparsity; j++) {
+                assertEquals(LARGE_CIRCLE_IMAGE.getColor(i * sparsity, j * sparsity), sparseImage.getColor(i, j));
+            }
         }
-        assertTimeout(Duration.ofMillis(50), () -> ShapeDrawer.drawMany(largeEvilShapesList, emptyCanvas));
+    }
+
+    @Test
+    void drawing100ShapesShouldBeLessThan100millisLong() {
+        assertTimeout(Duration.ofMillis(100), () -> ShapeDrawer.drawMany(LARGE_SHAPES_LIST, emptyCanvas));
     }
 }

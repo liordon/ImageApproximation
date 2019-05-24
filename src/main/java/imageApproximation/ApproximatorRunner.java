@@ -1,6 +1,7 @@
 package imageApproximation;
 
 import imageApproximation.ApproximationAlgorithms.GeneticAlgorithm;
+import imageApproximation.errorCalculators.ApproximationScoreCalculator;
 import imageApproximation.errorCalculators.MeanSquareErrorCalculator;
 import imageApproximation.graphics.ImageWrapper;
 import imageApproximation.graphics.shapes.ShapeBoundaries;
@@ -15,6 +16,8 @@ import java.util.function.ToDoubleFunction;
 
 public class ApproximatorRunner {
 
+    private static final int sparsity = 15;
+
     public static void main2(String[] args) {
         ImageWrapper image = new ImageWrapper(1,1);
     }
@@ -25,13 +28,14 @@ public class ApproximatorRunner {
             System.out.println("reading image");
             ImageWrapper targetImage = new ImageWrapper(ImageIO.read(new File("src/main/resources/golden_bell-300x225.jpg")));
             System.out.println("defining fitness and boundries");
-            MeanSquareErrorCalculator meanSquareErrorCalculator = new MeanSquareErrorCalculator(20);
-            ToDoubleFunction<OrganismInterface> fitnessFunction = (o) -> {
-                ImageWrapper state = ShapeDrawer.drawMany(o.getGenome(), new ImageWrapper(300, 225));
-                return -meanSquareErrorCalculator.applyAsDouble(state, targetImage);
-            };
+            MeanSquareErrorCalculator meanSquareErrorCalculator = new MeanSquareErrorCalculator(sparsity);
+            ApproximationScoreCalculator scoreCalculator =
+                    new ApproximationScoreCalculator(meanSquareErrorCalculator, targetImage, sparsity);
+            ToDoubleFunction<OrganismInterface> fitnessFunction =
+                    (o) -> -scoreCalculator.applyAsDouble(o.getGenome());
 
-            ShapeBoundaries boundaries = new ShapeBoundaries(300 * 2, 225 * 2, 300 * 2);
+
+            ShapeBoundaries boundaries = new ShapeBoundaries(300 + 2, 225 + 2, 300 * 2);
             long startEvolutionTime = System.currentTimeMillis();
             OrganismInterface progenitor = new CircleOrganism(boundaries);
             for (int i = 0; i < ExerciseConstants.MAX_ALLOWED_SHAPES; i++) {
@@ -43,13 +47,15 @@ public class ApproximatorRunner {
 
             System.out.println("starting evolution process");
             OrganismInterface fittestSpecimen = algorithm.getFittestOrganism();
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 200; i++) {
                 long epochStartTime = System.currentTimeMillis();
                 algorithm.advanceGeneration();
                 fittestSpecimen = algorithm.getFittestOrganism();
-                System.out.println("generation " + i + " took " +
-                        (System.currentTimeMillis() - epochStartTime) / 100 + " seconds.\nfittest score: " +
-                        fitnessFunction.applyAsDouble(fittestSpecimen));
+                if (i % 100 == 0) {
+                    System.out.println("generation " + i + " took " +
+                            (System.currentTimeMillis() - epochStartTime) / 1000 + " seconds.\nfittest score: " +
+                            fitnessFunction.applyAsDouble(fittestSpecimen));
+                }
             }
             System.out.println(
                     "evolution finished! ant it only took " +

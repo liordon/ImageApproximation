@@ -16,10 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-class GeneticAlgorithmTest {
+class GeneticAlgorithmUTest {
     private static final int SIZABLE_POPULATION = 100;
-    private static final double SURVIVAL_RATE = .1;
-    private static final int SURVIVAL_SIZE = (int) Math.round(SIZABLE_POPULATION * SURVIVAL_RATE);
+    private static final int SURVIVAL_SIZE = 10;
 
     private static OrganismInterface mockProgenitor;
     private static ToDoubleFunction<OrganismInterface> mockFitnessFunction;

@@ -42,9 +42,9 @@ class MeanSquareErrorCalculatorTest {
         ImageWrapper slightlyRed = new ImageWrapper(1, 1);
         ImageWrapper slightlyGreen = new ImageWrapper(1, 1);
         ImageWrapper slightlyBlue = new ImageWrapper(1, 1);
-        slightlyRed.setRGB(0, 0, new Color(1, 0, 0));
-        slightlyGreen.setRGB(0, 0, new Color(0, 1, 0));
-        slightlyBlue.setRGB(0, 0, new Color(0, 0, 1));
+        slightlyRed.setColor(0, 0, new Color(1, 0, 0));
+        slightlyGreen.setColor(0, 0, new Color(0, 1, 0));
+        slightlyBlue.setColor(0, 0, new Color(0, 0, 1));
 
         assertApplicationSymmetricallyEquals(1. / 3, GraphicsForTests.BLACK_PIXEL, slightlyRed);
         assertApplicationSymmetricallyEquals(1. / 3, GraphicsForTests.BLACK_PIXEL, slightlyGreen);
@@ -67,12 +67,11 @@ class MeanSquareErrorCalculatorTest {
     void comparingBlackAndWhitePixelsToBlackAndBlackPixelsYieldsHalfOfMaxPossibleDifference() {
         ImageWrapper blackAndWhite = new ImageWrapper(1, 2);
         ImageWrapper blackAndBlack = new ImageWrapper(1, 2);
-        blackAndWhite.setRGB(0, 0, Color.BLACK);
-        blackAndWhite.setRGB(0, 1, Color.WHITE);
-        blackAndBlack.setRGB(0, 0, Color.BLACK);
-        blackAndBlack.setRGB(0, 1, Color.BLACK);
+        blackAndWhite.setColor(0, 0, Color.BLACK);
+        blackAndWhite.setColor(0, 1, Color.WHITE);
+        blackAndBlack.setColor(0, 0, Color.BLACK);
+        blackAndBlack.setColor(0, 1, Color.BLACK);
 
         assertApplicationSymmetricallyEquals(maxDiffPerPixel / 2., blackAndBlack, blackAndWhite);
     }
-
 }

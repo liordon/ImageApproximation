@@ -10,8 +10,8 @@ public class GraphicsForTests {
 
     static {
         GraphicsForTests.WHITE_PIXEL = new ImageWrapper(1, 1);
-        GraphicsForTests.WHITE_PIXEL.setRGB(0, 0, Color.WHITE);
+        GraphicsForTests.WHITE_PIXEL.setColor(0, 0, Color.WHITE);
         GraphicsForTests.BLACK_PIXEL = new ImageWrapper(1, 1);
-        GraphicsForTests.BLACK_PIXEL.setRGB(0, 0, Color.BLACK);
+        GraphicsForTests.BLACK_PIXEL.setColor(0, 0, Color.BLACK);
     }
 }

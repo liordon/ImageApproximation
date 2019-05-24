@@ -35,7 +35,7 @@ public class ImageWrapper {
         image = new Color[width][height];
     }
 
-    public void setRGB(int x, int y, Color color) {
+    public void setColor(int x, int y, Color color) {
         image[x][y] = color;
     }
 

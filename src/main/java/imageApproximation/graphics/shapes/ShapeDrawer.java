@@ -30,7 +30,7 @@ public class ShapeDrawer {
         int redDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(i, j), RED);
         int greenDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(i, j), GREEN);
         int blueDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(i, j), BLUE);
-        canvas.setRGB(i, j,
+        canvas.setColor(i, j,
                 new Color(
                         (int) Math.round(canvas.getColor(i, j).getRed() + redDifference * shape.getOpacity()),
                         (int) Math.round(canvas.getColor(i, j).getGreen() + greenDifference * shape.getOpacity()),
@@ -42,16 +42,26 @@ public class ShapeDrawer {
     public static ImageWrapper drawMany(List<BasicShape> manyShapes, ImageWrapper canvas) {
         ImageWrapper result = ImageWrapper.deepCopy(canvas);
 
+        calculateSparsePixels(manyShapes, result, 1);
+
+        return result;
+    }
+
+    private static void calculateSparsePixels(List<BasicShape> manyShapes, ImageWrapper result, int sparsity) {
         for (int i = 0; i < result.getWidth(); i++) {
             for (int j = 0; j < result.getHeight(); j++) {
                 for (BasicShape shape : manyShapes) {
-                    if (shape.contains(i, j)) {
+                    if (shape.contains(i*sparsity, j*sparsity)) {
                         drawSinglePixelFromShape(shape, result, i, j);
                     }
                 }
             }
         }
+    }
 
+    public static ImageWrapper drawSparsely(List<BasicShape> basicShapes, int width, int height, int sparsity){
+        ImageWrapper result = new ImageWrapper(width/sparsity, height/sparsity);
+        calculateSparsePixels(basicShapes, result, sparsity);
         return result;
     }
 }
