@@ -3,7 +3,7 @@ package imageApproximation.graphics.shapes;
 import javafx.util.Pair;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BasicCircle extends BasicShape {
@@ -39,8 +39,7 @@ public class BasicCircle extends BasicShape {
 
     @Override
     public List<Point> getAffectedPixels() {
-        int approxAffectedPixels = (int) Math.round(2 * Math.PI * getScale());
-        List<Point> affectedPixels = new ArrayList<>(approxAffectedPixels);
+        List<Point> affectedPixels = new LinkedList<>();
             Pair<Point, Point> bound = getBoundingRectangle();
             for (int i = bound.getKey().x; i <= bound.getValue().x; i++) {
                 for (int j = bound.getKey().y; j <= bound.getValue().y; j++) {
@@ -56,9 +55,9 @@ public class BasicCircle extends BasicShape {
     public boolean contains(int x, int y) {
         int xDistance = x - getX();
         int yDistance = y - getY();
-        double euclidianDistance = Math.sqrt(xDistance * xDistance + yDistance * yDistance);
+        double euclideanDistance = Math.sqrt(xDistance * xDistance + yDistance * yDistance);
 
-        return ((euclidianDistance <= getScale()
+        return ((euclideanDistance <= getScale()
         ));
     }
 }

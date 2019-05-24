@@ -1,8 +1,5 @@
 package imageApproximation.graphics.shapes;
 
-import static imageApproximation.graphics.shapes.GraphicsForTests.BLACK_PIXEL;
-import static org.junit.jupiter.api.Assertions.*;
-
 import imageApproximation.graphics.ImageWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static imageApproximation.graphics.shapes.GraphicsForTests.BLACK_PIXEL;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class ShapeDrawerTest {

@@ -102,13 +102,13 @@ public class GeneticAlgorithm {
             }
         }
 
-        survivors = new ArrayList<>(survivorsSize);
         newGeneration.addAll(survivors);
         newGeneration.sort(comparativeFitnessFunction);
         fittestOrganism = newGeneration.get(0);
         highestFitness = fitnessFunction.applyAsDouble(fittestOrganism);
         lowliestMutant = newGeneration.get(survivorsSize - 1);
         lowestFitness = fitnessFunction.applyAsDouble(lowliestMutant);
+        survivors = new ArrayList<>(survivorsSize);
         survivors.addAll(newGeneration.subList(0, survivorsSize));
     }
 }
