@@ -6,16 +6,14 @@ import imageApproximation.graphics.shapes.BasicShape;
 import imageApproximation.graphics.shapes.ShapeBoundaries;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
 public class CircleOrganism implements OrganismInterface {
     private static Random random = new Random();
     private final List<BasicShape> genome = new ArrayList<>();
     private final ShapeBoundaries shapeBoundaries;
-    private int maximumMutantVariation = (int) Math.round(ExerciseConstants.MAX_ALLOWED_SHAPES * .4);
+    private int maximumMutantVariation = (int) Math.round(ExerciseConstants.MAX_ALLOWED_SHAPES * .6);
     private int minimumMutantVariation = (int) Math.round(ExerciseConstants.MAX_ALLOWED_SHAPES * .1);
 
     public CircleOrganism(ShapeBoundaries shapeBoundaries) {
@@ -78,11 +76,15 @@ public class CircleOrganism implements OrganismInterface {
     }
 
     @Override
-    public OrganismInterface crossBreed(OrganismInterface mate) {
-        List<BasicShape> offspringGenome = new ArrayList<>(genome.size() + mate.getGenome().size());
-        offspringGenome.addAll(genome.subList(0, genome.size() / 2));
-        offspringGenome.addAll(mate.getGenome().subList(0, mate.getGenome().size() / 2));
-        Collections.shuffle(offspringGenome);
+    public OrganismInterface crossBreed(OrganismInterface... mates) {
+        List<BasicShape> offspringGenome = new ArrayList<>(genome.size());
+        List<BasicShape> previousGenome = new LinkedList<>(genome);
+        for (OrganismInterface mate : mates) {
+            offspringGenome.addAll(previousGenome.subList(0, previousGenome.size() / 2));
+            offspringGenome.addAll(mate.getGenome().subList(0, mate.getGenome().size() / 2));
+            Collections.shuffle(offspringGenome);
+            previousGenome = new LinkedList<>(offspringGenome.subList(0,offspringGenome.size()/2));
+        }
         return new CircleOrganism(offspringGenome, shapeBoundaries);
     }
 }

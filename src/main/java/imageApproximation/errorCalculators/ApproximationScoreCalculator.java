@@ -24,17 +24,6 @@ public class ApproximationScoreCalculator implements ToDoubleFunction<List<Basic
         this.targetImage = targetImage;
     }
 
-    private ImageWrapper getSparseCopy(ImageWrapper targetImage, int sparsity) {
-        ImageWrapper result = new ImageWrapper(targetImage.getWidth()/sparsity, targetImage.getHeight()/sparsity);
-        for (int i = 0; i < targetImage.getWidth()/sparsity; i++) {
-            for (int j = 0; j < targetImage.getHeight() / sparsity; j++) {
-                result.setColor(i,j, targetImage.getColor(i*sparsity, j*sparsity));
-            }
-        }
-        return result;
-    }
-
-
     @Override
     public double applyAsDouble(List<BasicShape> value) {
         if (!scoreCache.containsKey(value)) {
@@ -43,5 +32,9 @@ public class ApproximationScoreCalculator implements ToDoubleFunction<List<Basic
                     targetImage));
         }
         return scoreCache.get(value);
+    }
+
+    public void clearCache() {
+        scoreCache.clear();
     }
 }

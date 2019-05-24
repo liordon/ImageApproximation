@@ -16,7 +16,7 @@ import java.util.function.ToDoubleFunction;
 
 public class ApproximatorRunner {
 
-    private static final int sparsity = 15;
+    private static final int sparsity = 5;
 
     public static void main2(String[] args) {
         ImageWrapper image = new ImageWrapper(1,1);
@@ -47,14 +47,17 @@ public class ApproximatorRunner {
 
             System.out.println("starting evolution process");
             OrganismInterface fittestSpecimen = algorithm.getFittestOrganism();
-            for (int i = 0; i < 200; i++) {
+            for (int i = 0; i < 300; i++) {
                 long epochStartTime = System.currentTimeMillis();
                 algorithm.advanceGeneration();
                 fittestSpecimen = algorithm.getFittestOrganism();
                 if (i % 100 == 0) {
-                    System.out.println("generation " + i + " took " +
-                            (System.currentTimeMillis() - epochStartTime) / 1000 + " seconds.\nfittest score: " +
+                    System.out.println("Generation " + i + " took " +
+                            (System.currentTimeMillis() - epochStartTime) + " milliseconds. Total of " +
+                            (System.currentTimeMillis() - startEvolutionTime) / 1000 +
+                            " seconds so far.\nfittest score: " +
                             fitnessFunction.applyAsDouble(fittestSpecimen));
+                    scoreCalculator.clearCache();
                 }
             }
             System.out.println(

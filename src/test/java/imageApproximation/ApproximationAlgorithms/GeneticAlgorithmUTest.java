@@ -6,10 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.ToDoubleFunction;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,6 +39,7 @@ class GeneticAlgorithmUTest {
         when(mock.cloneOrganism()).thenReturn(mock);
         when(mock.spawnMutant()).thenReturn(mock(OrganismInterface.class));
         when(mock.crossBreed(any())).thenReturn(mock(OrganismInterface.class));
+        when(mock.getGenome()).thenReturn(Collections.emptyList());
         return mock;
     }
 
@@ -52,8 +50,11 @@ class GeneticAlgorithmUTest {
 
     @Test
     void initiallyMutatesProgenitorIntoSurvivorsArray() {
-        new GeneticAlgorithm(SIZABLE_POPULATION, SURVIVAL_SIZE, mockProgenitor, x -> 0);
-        verify(mockProgenitor, times(SURVIVAL_SIZE - 1)).spawnMutant();
+        OrganismInterface selfReturningMock = mock(OrganismInterface.class);
+        when(selfReturningMock.getGenome()).thenReturn(Collections.emptyList());
+        when(selfReturningMock.spawnMutant()).thenReturn(selfReturningMock);
+        new GeneticAlgorithm(SIZABLE_POPULATION, SURVIVAL_SIZE, selfReturningMock, x -> 0);
+        verify(selfReturningMock, times(SIZABLE_POPULATION - 1)).spawnMutant();
     }
 
     @Test
@@ -63,10 +64,11 @@ class GeneticAlgorithmUTest {
 
     @Test
     void canReturnBestOffspringSoFarAccordingToFitnessFunction() {
-        ToDoubleFunction<OrganismInterface> fitnessFunction = organism -> organism == mockProgenitor ? 100 : 0;
-        GeneticAlgorithm inspected = new GeneticAlgorithm(SIZABLE_POPULATION, 0, mockProgenitor, fitnessFunction);
+        OrganismInterface multiGenerationMock = new MockOrganism();
+        ToDoubleFunction<OrganismInterface> fitnessFunction = organism -> organism == multiGenerationMock ? 100 : 0;
+        GeneticAlgorithm inspected = new GeneticAlgorithm(SIZABLE_POPULATION, 10, multiGenerationMock, fitnessFunction);
 
-        assertSame(mockProgenitor, inspected.getFittestOrganism());
+        assertSame(multiGenerationMock, inspected.getFittestOrganism());
     }
 
     @Test

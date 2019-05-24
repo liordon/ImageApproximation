@@ -12,7 +12,7 @@ import java.util.List;
 public interface OrganismInterface extends Cloneable {
     OrganismInterface spawnMutant();
 
-    OrganismInterface crossBreed(OrganismInterface mate);
+    OrganismInterface crossBreed(OrganismInterface... mates);
 
     List<BasicShape> getGenome();
 
