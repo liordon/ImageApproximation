@@ -42,8 +42,8 @@ public class ApproximationRunner {
     public static void main(String[] args) {
         try {
             LOGGER.info("reading image");
-//            final String pathToTargetImage = "src/main/resources/golden_bell-200x200.jpg";
-            final String pathToTargetImage = "src/main/resources/purity-400x400.jpg";
+            final String pathToTargetImage = "src/main/resources/golden_bell-200x200.jpg";
+//            final String pathToTargetImage = "src/main/resources/purity-400x400.jpg";
             final BufferedImage imageReading = ImageIO.read(new File(pathToTargetImage));
             demonstrationFrame = new DemonstrationFrame(imageReading);
             imageWidth = imageReading.getWidth();
@@ -51,6 +51,7 @@ public class ApproximationRunner {
             demonstrationFrame.updateApproximatedImage(new ImageWrapper(imageWidth, imageHeight).toBufferedImage());
             demonstrationFrame.pack();
             demonstrationFrame.setVisible(true);
+            Thread.sleep(5000);
             ImageWrapper targetImage = new ImageWrapper(imageReading);
 
             LOGGER.info("defining fitness and boundaries");

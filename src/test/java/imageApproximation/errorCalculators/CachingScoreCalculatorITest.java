@@ -22,8 +22,8 @@ class CachingScoreCalculatorITest {
 
     @BeforeEach
     void setUp() {
-        inspected = new CachingScoreCalculator(new MeanSquareErrorCalculator(SPARSITY), new ImageWrapper(
-                ExerciseConstants.MAX_IMAGE_SIZE, ExerciseConstants.MAX_IMAGE_SIZE), SPARSITY);
+        inspected = new CachingScoreCalculator(new ShapeListScoreCalculator(new MeanSquareErrorCalculator(SPARSITY), new ImageWrapper(
+                ExerciseConstants.MAX_IMAGE_SIZE, ExerciseConstants.MAX_IMAGE_SIZE), SPARSITY));
     }
 
     @Test
