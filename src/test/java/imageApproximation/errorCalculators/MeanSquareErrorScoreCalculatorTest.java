@@ -1,7 +1,5 @@
 package imageApproximation.errorCalculators;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import imageApproximation.graphics.ImageWrapper;
 import imageApproximation.graphics.shapes.GraphicsForTests;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,11 +7,13 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class MeanSquareErrorCalculatorTest {
 
-    private static int maxDiffPerPixel = 255 * 255; // color values range from 0 to 255, so max squared difference is 255^2
-    private static MeanSquareErrorCalculator inspected;
+class MeanSquareErrorScoreCalculatorTest {
+
+    private static MeanSquareErrorScoreCalculator inspected;
 
 
     private static void assertApplicationSymmetricallyEquals(double expected, ImageWrapper arg1, ImageWrapper arg2) {
@@ -23,22 +23,22 @@ class MeanSquareErrorCalculatorTest {
 
     @BeforeAll
     static void setUp() {
-        inspected = new MeanSquareErrorCalculator(1);
+        inspected = new MeanSquareErrorScoreCalculator(1);
     }
 
     @Test
-    void comparingAnImageToItselfShouldReturnZero() {
+    void comparingAnImageToItselfShouldReturnBestPossibleScore() {
         ImageWrapper example = new ImageWrapper(1, 1);
-        assertApplicationSymmetricallyEquals(0, example, example);
+        assertApplicationSymmetricallyEquals(MeanSquareErrorScoreCalculator.MAX_POSSIBLE_SCORE, example, example);
     }
 
     @Test
-    void comparingAWhitePixelToABlackPixelShouldReturn255Squared() {
-        assertApplicationSymmetricallyEquals(maxDiffPerPixel, GraphicsForTests.BLACK_PIXEL, GraphicsForTests.WHITE_PIXEL);
+    void comparingAWhitePixelToABlackPixelShouldReturnAScoreOf0() {
+        assertApplicationSymmetricallyEquals(0, GraphicsForTests.BLACK_PIXEL, GraphicsForTests.WHITE_PIXEL);
     }
 
     @Test
-    void comparingABlackPixelToAPixelValued1InASingleColorIsAlwaysOneThird() {
+    void comparingABlackPixelToAPixelValued1InASingleColorIsOneThirdLessThanBestScore() {
         ImageWrapper slightlyRed = new ImageWrapper(1, 1);
         ImageWrapper slightlyGreen = new ImageWrapper(1, 1);
         ImageWrapper slightlyBlue = new ImageWrapper(1, 1);
@@ -46,9 +46,12 @@ class MeanSquareErrorCalculatorTest {
         slightlyGreen.setColor(0, 0, new Color(0, 1, 0));
         slightlyBlue.setColor(0, 0, new Color(0, 0, 1));
 
-        assertApplicationSymmetricallyEquals(1. / 3, GraphicsForTests.BLACK_PIXEL, slightlyRed);
-        assertApplicationSymmetricallyEquals(1. / 3, GraphicsForTests.BLACK_PIXEL, slightlyGreen);
-        assertApplicationSymmetricallyEquals(1. / 3, GraphicsForTests.BLACK_PIXEL, slightlyBlue);
+        assertApplicationSymmetricallyEquals(MeanSquareErrorScoreCalculator.MAX_POSSIBLE_SCORE - 1. / 3,
+                GraphicsForTests.BLACK_PIXEL, slightlyRed);
+        assertApplicationSymmetricallyEquals(MeanSquareErrorScoreCalculator.MAX_POSSIBLE_SCORE - 1. / 3,
+                GraphicsForTests.BLACK_PIXEL, slightlyGreen);
+        assertApplicationSymmetricallyEquals(MeanSquareErrorScoreCalculator.MAX_POSSIBLE_SCORE - 1. / 3,
+                GraphicsForTests.BLACK_PIXEL, slightlyBlue);
     }
 
     @Test
@@ -72,6 +75,7 @@ class MeanSquareErrorCalculatorTest {
         blackAndBlack.setColor(0, 0, Color.BLACK);
         blackAndBlack.setColor(0, 1, Color.BLACK);
 
-        assertApplicationSymmetricallyEquals(maxDiffPerPixel / 2., blackAndBlack, blackAndWhite);
+        assertApplicationSymmetricallyEquals(MeanSquareErrorScoreCalculator.MAX_POSSIBLE_SCORE / 2., blackAndBlack,
+                blackAndWhite);
     }
 }

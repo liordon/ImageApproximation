@@ -1,5 +1,6 @@
 package imageApproximation.ApproximationAlgorithms;
 
+import imageApproximation.graphics.shapes.BasicShape;
 import imageApproximation.organisms.MockOrganism;
 import imageApproximation.organisms.OrganismInterface;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,7 +19,7 @@ class GeneticAlgorithmUTest {
     private static final int SURVIVAL_SIZE = 10;
 
     private static OrganismInterface mockProgenitor;
-    private static ToDoubleFunction<OrganismInterface> mockFitnessFunction;
+    private static ToDoubleFunction<List<BasicShape>> mockFitnessFunction;
     private GeneticAlgorithm inspected;
     private static List<OrganismInterface> fittestSpecimen;
 
@@ -64,8 +65,9 @@ class GeneticAlgorithmUTest {
 
     @Test
     void canReturnBestOffspringSoFarAccordingToFitnessFunction() {
-        OrganismInterface multiGenerationMock = new MockOrganism();
-        ToDoubleFunction<OrganismInterface> fitnessFunction = organism -> organism == multiGenerationMock ? 100 : 0;
+        OrganismInterface multiGenerationMock = spy(new MockOrganism());
+        when(multiGenerationMock.getGenome()).thenReturn(new LinkedList<>());
+        ToDoubleFunction<List<BasicShape>> fitnessFunction = genome -> genome == multiGenerationMock.getGenome() ? 100 : 0;
         GeneticAlgorithm inspected = new GeneticAlgorithm(SIZABLE_POPULATION, 10, multiGenerationMock, fitnessFunction);
 
         assertSame(multiGenerationMock, inspected.getFittestOrganism());

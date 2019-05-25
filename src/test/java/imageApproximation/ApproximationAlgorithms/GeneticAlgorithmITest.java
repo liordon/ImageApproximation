@@ -1,8 +1,8 @@
 package imageApproximation.ApproximationAlgorithms;
 
-import imageApproximation.ExerciseConstants;
 import imageApproximation.errorCalculators.ApproximationScoreCalculator;
-import imageApproximation.errorCalculators.MeanSquareErrorCalculator;
+import imageApproximation.errorCalculators.MeanSquareErrorScoreCalculator;
+import imageApproximation.graphics.shapes.BasicShape;
 import imageApproximation.organisms.CircleOrganism;
 import imageApproximation.organisms.OrganismInterface;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.function.ToDoubleFunction;
 
 import static imageApproximation.DifficultTestSubjects.*;
@@ -22,7 +23,7 @@ class GeneticAlgorithmITest {
     private static final int sparsity = 10;
 
     private static OrganismInterface circleProgenitor;
-    private static ToDoubleFunction<OrganismInterface> mseFitnessFunction;
+    private static ToDoubleFunction<List<BasicShape>> mseFitnessFunction;
 
     private GeneticAlgorithm inspected;
 
@@ -30,11 +31,9 @@ class GeneticAlgorithmITest {
     static void setupInitialPopulations() {
         circleProgenitor = new CircleOrganism(LARGE_SHAPES_LIST, LARGEST_BOUNDARIES);
 
-        MeanSquareErrorCalculator meanSquareErrorCalculator = new MeanSquareErrorCalculator(sparsity);
-        ApproximationScoreCalculator scoreCalculator =
-                new ApproximationScoreCalculator(meanSquareErrorCalculator, LARGE_BLANK_IMAGE, sparsity);
+        MeanSquareErrorScoreCalculator meanSquareErrorScoreCalculator = new MeanSquareErrorScoreCalculator(sparsity);
         mseFitnessFunction =
-                (o) -> -scoreCalculator.applyAsDouble(o.getGenome());
+                new ApproximationScoreCalculator(meanSquareErrorScoreCalculator, LARGE_BLANK_IMAGE, sparsity);
     }
 
     @BeforeEach

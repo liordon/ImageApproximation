@@ -26,7 +26,10 @@ public class ImageWrapper {
         this.image = new Color[image.getWidth()][image.getHeight()];
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
-                this.image[i][j] = new Color(image.getRGB(i,j));
+                final int rgb = image.getRGB(i, j);
+                if ( rgb != Color.BLACK.getRGB()) {
+                    this.image[i][j] = new Color(rgb);
+                }
             }
         }
     }
@@ -79,7 +82,7 @@ public class ImageWrapper {
         }
     }
 
-    public BufferedImage getInnerImage() {
+    public BufferedImage toBufferedImage() {
         BufferedImage result = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < image.length; i++) {
             for (int j = 0; j < image[0].length; j++) {

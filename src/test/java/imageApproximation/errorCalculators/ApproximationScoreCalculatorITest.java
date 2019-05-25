@@ -22,13 +22,13 @@ class ApproximationScoreCalculatorITest {
 
     @BeforeEach
     void setUp() {
-        inspected = new ApproximationScoreCalculator(new MeanSquareErrorCalculator(SPARSITY), new ImageWrapper(
+        inspected = new ApproximationScoreCalculator(new MeanSquareErrorScoreCalculator(SPARSITY), new ImageWrapper(
                 ExerciseConstants.MAX_IMAGE_SIZE, ExerciseConstants.MAX_IMAGE_SIZE), SPARSITY);
     }
 
     @Test
     void scoreCalculationIsEqualToMSEComparisonOfBothImages() {
-        assertEquals(new MeanSquareErrorCalculator(SPARSITY).applyAsDouble(
+        assertEquals(new MeanSquareErrorScoreCalculator(SPARSITY).applyAsDouble(
                 ShapeDrawer.drawSparsely(LARGE_SHAPES_LIST, ExerciseConstants.MAX_IMAGE_SIZE,
                         ExerciseConstants.MAX_IMAGE_SIZE, SPARSITY), LARGE_BLANK_IMAGE),
                 inspected.applyAsDouble(LARGE_SHAPES_LIST));

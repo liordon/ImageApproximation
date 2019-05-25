@@ -6,8 +6,8 @@ import imageApproximation.graphics.shapes.BasicShape;
 import imageApproximation.graphics.shapes.ShapeBoundaries;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class CircleOrganism implements OrganismInterface {
     private static Random random = new Random();
@@ -18,6 +18,13 @@ public class CircleOrganism implements OrganismInterface {
 
     public CircleOrganism(ShapeBoundaries shapeBoundaries) {
         this.shapeBoundaries = shapeBoundaries;
+    }
+
+    public CircleOrganism(ShapeBoundaries shapeBoundaries, int numberOfGenes) {
+        this.shapeBoundaries = shapeBoundaries;
+        for (int i = 0; i < numberOfGenes; i++) {
+            addCircleToGenome(getGenome());
+        }
     }
 
     public CircleOrganism(CircleOrganism other, ShapeBoundaries shapeBoundaries) {
@@ -39,15 +46,19 @@ public class CircleOrganism implements OrganismInterface {
         List<BasicShape> newGenome = new ArrayList<>(genome.size() + 1);
         newGenome.addAll(genome);
 
-        if (genome.size() < ExerciseConstants.MAX_ALLOWED_SHAPES) {
-            addCircleToGenome(newGenome);
-        } else {
-            for (int i = 0; i < minimumMutantVariation + random.nextInt(maximumMutantVariation); i++) {
+        final int mutationRatio = minimumMutantVariation + random.nextInt(maximumMutantVariation);
+        final boolean initiallyFullGenome = genome.size() >= ExerciseConstants.MAX_ALLOWED_SHAPES;
+
+        for (int i = 0; i < mutationRatio; i++) {
+            if (initiallyFullGenome) {
                 newGenome.remove(random.nextInt(newGenome.size()));
+            } else if (genome.size() < ExerciseConstants.MAX_ALLOWED_SHAPES){
                 addCircleToGenome(newGenome);
+            } else {
+                break;
             }
         }
-
+        Collections.shuffle(newGenome);
         return new CircleOrganism(newGenome, shapeBoundaries);
     }
 
@@ -59,7 +70,7 @@ public class CircleOrganism implements OrganismInterface {
                         random.nextInt(ExerciseConstants.MAX_COLOR_VALUE),
                         random.nextInt(ExerciseConstants.MAX_COLOR_VALUE)
                 ),
-                random.nextDouble(),
+                random.nextDouble() * .6,
                 random.nextInt(shapeBoundaries.getMaxWidth()),
                 random.nextInt(shapeBoundaries.getMaxHeight()));
         newGenome.add(circle);
@@ -81,7 +92,7 @@ public class CircleOrganism implements OrganismInterface {
         List<BasicShape> previousGenome = new LinkedList<>(genome);
         for (OrganismInterface mate : mates) {
             offspringGenome.addAll(previousGenome.subList(0, previousGenome.size() / 2));
-            offspringGenome.addAll(mate.getGenome().subList(0, mate.getGenome().size() / 2));
+            offspringGenome.addAll(mate.getGenome().subList(mate.getGenome().size() / 2, mate.getGenome().size()));
             Collections.shuffle(offspringGenome);
             previousGenome = new LinkedList<>(offspringGenome.subList(0,offspringGenome.size()/2));
         }

@@ -1,5 +1,6 @@
 package imageApproximation.errorCalculators;
 
+import imageApproximation.ExerciseConstants;
 import imageApproximation.graphics.ColorChannel;
 import imageApproximation.graphics.ImageWrapper;
 
@@ -7,10 +8,11 @@ import java.util.function.ToDoubleBiFunction;
 
 import static imageApproximation.graphics.ColorChannel.getColorDifferenceOfChannel;
 
-public class MeanSquareErrorCalculator implements ToDoubleBiFunction<ImageWrapper, ImageWrapper> {
+public class MeanSquareErrorScoreCalculator implements ToDoubleBiFunction<ImageWrapper, ImageWrapper> {
     private final int sparsity;
+    static final int MAX_POSSIBLE_SCORE = ExerciseConstants.MAX_COLOR_VALUE * ExerciseConstants.MAX_COLOR_VALUE;
 
-    public MeanSquareErrorCalculator(int sparsity) {
+    public MeanSquareErrorScoreCalculator(int sparsity) {
         this.sparsity = sparsity;
     }
 
@@ -32,7 +34,8 @@ public class MeanSquareErrorCalculator implements ToDoubleBiFunction<ImageWrappe
                 }
             }
         }
-        return sum / 3. / (verified.getWidth() * verified.getHeight());
+        return MAX_POSSIBLE_SCORE - (sum / 3. / (verified.getWidth() * verified.getHeight())) -
+                ExerciseConstants.MAX_ALLOWED_SHAPES * 255;
     }
 
 }
