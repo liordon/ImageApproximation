@@ -16,6 +16,7 @@ public class MeanSquareErrorScoreCalculator implements ToDoubleBiFunction<ImageW
         this.sparsity = sparsity;
     }
 
+    @Override
     public double applyAsDouble(ImageWrapper verified, ImageWrapper target) {
         if (verified.getWidth() * sparsity != target.getWidth()
                 || verified.getHeight() * sparsity != target.getHeight()) {
@@ -25,11 +26,12 @@ public class MeanSquareErrorScoreCalculator implements ToDoubleBiFunction<ImageW
                     target.getWidth(), target.getHeight()));
         }
         double sum = 0;
-        for (int i = 0; i < verified.getWidth(); i += sparsity) {
-            for (int j = 0; j < verified.getHeight(); j += sparsity) {
+        for (int i = 0; i < verified.getWidth(); i++) {
+            for (int j = 0; j < verified.getHeight(); j++) {
                 for (ColorChannel channel : ColorChannel.values()) {
                     int channelDiff =
-                            getColorDifferenceOfChannel(verified.getColor(i, j), target.getColor(i, j), channel);
+                            getColorDifferenceOfChannel(verified.getColor(i, j),
+                                    target.getColor(i * sparsity, j * sparsity), channel);
                     sum += Math.pow(channelDiff, 2.);
                 }
             }

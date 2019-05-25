@@ -18,11 +18,6 @@ public class BasicCircle extends BasicShape {
     }
 
     @Override
-    public BasicShapesTypeEnum getShapesType() {
-        return BasicShapesTypeEnum.CIRCLE;
-    }
-
-    @Override
     public Pair<Point, Point> getBoundingRectangle() {
         if (boundingRectangle == null) {
             if (getScale() == 0) {

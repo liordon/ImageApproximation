@@ -10,15 +10,15 @@ import java.util.Map;
 import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
 
-public class ApproximationScoreCalculator implements ToDoubleFunction<List<BasicShape>> {
+public class CachingScoreCalculator implements ToDoubleFunction<List<BasicShape>> {
 
     private final ToDoubleBiFunction<ImageWrapper, ImageWrapper> errorCalculator;
     private final Map<List<BasicShape>, Double> scoreCache = new HashMap<>();
     private final ImageWrapper targetImage;
     private final int sparsity;
 
-    public ApproximationScoreCalculator(ToDoubleBiFunction<ImageWrapper, ImageWrapper> errorCalculator,
-                                        ImageWrapper targetImage, int sparsity) {
+    public CachingScoreCalculator(ToDoubleBiFunction<ImageWrapper, ImageWrapper> errorCalculator,
+                                  ImageWrapper targetImage, int sparsity) {
         this.errorCalculator = errorCalculator;
         this.sparsity = sparsity;
         this.targetImage = targetImage;

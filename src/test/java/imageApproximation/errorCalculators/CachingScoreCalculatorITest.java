@@ -14,15 +14,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 
-class ApproximationScoreCalculatorITest {
+class CachingScoreCalculatorITest {
 
 
     private final int SPARSITY = 20;
-    private ApproximationScoreCalculator inspected;
+    private CachingScoreCalculator inspected;
 
     @BeforeEach
     void setUp() {
-        inspected = new ApproximationScoreCalculator(new MeanSquareErrorScoreCalculator(SPARSITY), new ImageWrapper(
+        inspected = new CachingScoreCalculator(new MeanSquareErrorScoreCalculator(SPARSITY), new ImageWrapper(
                 ExerciseConstants.MAX_IMAGE_SIZE, ExerciseConstants.MAX_IMAGE_SIZE), SPARSITY);
     }
 

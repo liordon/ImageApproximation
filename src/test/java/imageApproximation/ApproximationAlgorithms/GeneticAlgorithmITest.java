@@ -1,6 +1,6 @@
 package imageApproximation.ApproximationAlgorithms;
 
-import imageApproximation.errorCalculators.ApproximationScoreCalculator;
+import imageApproximation.errorCalculators.CachingScoreCalculator;
 import imageApproximation.errorCalculators.MeanSquareErrorScoreCalculator;
 import imageApproximation.graphics.shapes.BasicShape;
 import imageApproximation.organisms.CircleOrganism;
@@ -33,7 +33,7 @@ class GeneticAlgorithmITest {
 
         MeanSquareErrorScoreCalculator meanSquareErrorScoreCalculator = new MeanSquareErrorScoreCalculator(sparsity);
         mseFitnessFunction =
-                new ApproximationScoreCalculator(meanSquareErrorScoreCalculator, LARGE_BLANK_IMAGE, sparsity);
+                new CachingScoreCalculator(meanSquareErrorScoreCalculator, LARGE_BLANK_IMAGE, sparsity);
     }
 
     @BeforeEach

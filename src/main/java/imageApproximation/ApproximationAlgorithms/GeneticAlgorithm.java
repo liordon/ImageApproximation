@@ -129,9 +129,11 @@ public class GeneticAlgorithm extends AnytimeAlgorithm {
             }
         }
 
-        LOGGER.debug("highest fitness: " + highestFitness + " lowest fitnes: " + lowestFitness);
-        LOGGER.debug("new generation size: " + newGeneration.size());
-        LOGGER.debug("the number of misfits is: " + misfits.size());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("highest fitness: " + highestFitness + " lowest fitnes: " + lowestFitness);
+            LOGGER.debug("new generation size: " + newGeneration.size());
+            LOGGER.debug("the number of misfits is: " + misfits.size());
+        }
         newGeneration.sort(this::compareFitness);
         fittestOrganism = newGeneration.get(0);
         highestFitness = calculateFitness(fittestOrganism);
@@ -145,9 +147,9 @@ public class GeneticAlgorithm extends AnytimeAlgorithm {
         int minPossibleDiversityIndex =
                 Math.min(((survivorsSize * (diversityFactor + 1)) / diversityFactor), misfits.size());
 
-//        survivors.addAll(newGeneration.subList(0, survivorsSize - minPossibleDiversityIndex));
-//        survivors.addAll(misfits.subList(0, minPossibleDiversityIndex));
-        survivors.addAll(newGeneration.subList(0, survivorsSize));
+        survivors.addAll(newGeneration.subList(0, survivorsSize - minPossibleDiversityIndex));
+        survivors.addAll(misfits.subList(0, minPossibleDiversityIndex));
+//        survivors.addAll(newGeneration.subList(0, survivorsSize));
     }
 
     @Override

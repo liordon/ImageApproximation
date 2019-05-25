@@ -3,7 +3,7 @@ package imageApproximation;
 import imageApproximation.ApproximationAlgorithms.AnytimeAlgorithm;
 import imageApproximation.ApproximationAlgorithms.GeneticAlgorithm;
 import imageApproximation.dmonstrationUI.DemonstrationFrame;
-import imageApproximation.errorCalculators.ApproximationScoreCalculator;
+import imageApproximation.errorCalculators.CachingScoreCalculator;
 import imageApproximation.errorCalculators.MeanSquareErrorScoreCalculator;
 import imageApproximation.graphics.ImageWrapper;
 import imageApproximation.graphics.shapes.BasicShape;
@@ -32,17 +32,18 @@ public class ApproximationRunner {
     private static final int MILLIS_IN_MINUTE = 60_000;
     private static final int generationSize = 1000;
     private static final int survivalSize = 50;
+    private static final int NUMBER_OF_GENES = 0; //ExerciseConstants.MAX_ALLOWED_SHAPES / 2;
     private static DemonstrationFrame demonstrationFrame;
     private static int imageWidth;
     private static int imageHeight;
     private static ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     public static void main(String[] args) {
-
         try {
-
             LOGGER.info("reading image");
-            final BufferedImage imageReading = ImageIO.read(new File("src/main/resources/golden_bell-200x200.jpg"));
+//            final String pathToTargetImage = "src/main/resources/golden_bell-200x200.jpg";
+            final String pathToTargetImage = "src/main/resources/purity-400x400.jpg";
+            final BufferedImage imageReading = ImageIO.read(new File(pathToTargetImage));
             demonstrationFrame = new DemonstrationFrame(imageReading);
             imageWidth = imageReading.getWidth();
             imageHeight = imageReading.getHeight();
@@ -53,13 +54,13 @@ public class ApproximationRunner {
 
             LOGGER.info("defining fitness and boundaries");
             ToDoubleFunction<List<BasicShape>> scoreCalculator =
-                    new ApproximationScoreCalculator(new MeanSquareErrorScoreCalculator(SPARSITY), targetImage,
+                    new CachingScoreCalculator(new MeanSquareErrorScoreCalculator(SPARSITY), targetImage,
                             SPARSITY);
 
             ShapeBoundaries boundaries =
                     new ShapeBoundaries(imageWidth + 2, imageHeight + 2, Math.max(imageWidth, imageHeight) * 2);
             long startEvolutionTime = System.currentTimeMillis();
-            OrganismInterface progenitor = new CircleOrganism(boundaries, ExerciseConstants.MAX_ALLOWED_SHAPES/2);
+            OrganismInterface progenitor = new CircleOrganism(boundaries, NUMBER_OF_GENES);
 
             LOGGER.info("creating initial population");
             GeneticAlgorithm algorithm = new GeneticAlgorithm(generationSize,
@@ -83,7 +84,6 @@ public class ApproximationRunner {
                     "evolution finished! and it only took " +
                             (System.currentTimeMillis() - startEvolutionTime) / MILLIS_IN_MINUTE + " minutes!");
 
-
             ImageIO.write(
                     ShapeDrawer.drawMany(algorithm.getBestResultSoFar(), new ImageWrapper(300, 225)).toBufferedImage(),
                     "jpg",
@@ -92,7 +92,8 @@ public class ApproximationRunner {
                     algorithm.getBestResultSoFar()) + " and contained " +
                     algorithm.getBestResultSoFar().size() + " shapes.");
         } catch (Exception e) {
-            LOGGER.fatal(e);
+            LOGGER.catching(e);
+            demonstrationFrame.setVisible(false);
         }
     }
 

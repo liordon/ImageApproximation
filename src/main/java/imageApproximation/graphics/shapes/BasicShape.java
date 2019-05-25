@@ -22,8 +22,6 @@ public abstract class BasicShape {
         this.y = y;
     }
 
-    public abstract BasicShapesTypeEnum getShapesType();
-
     public double getRotation() {
         return rotation;
     }

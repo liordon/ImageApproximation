@@ -24,12 +24,14 @@ public abstract class AnytimeAlgorithm extends Observable {
             long iterationTime = System.currentTimeMillis() - iterationStart;
             avarageIterationTime = (avarageIterationTime * (iterationsSoFar++) + iterationTime) / iterationsSoFar;
             final long runTimeSoFar = System.currentTimeMillis() - runStartTime;
-            LOGGER.debug("Iteration " + iterationsSoFar + " took " +
-                    iterationTime + " milliseconds, compared to avarage " + avarageIterationTime +
-                    " millis. Total of " +
-                    runTimeSoFar / 1000 +
-                    " seconds so far. Best score so far: " +
-                    getBestScoreSoFar());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Iteration " + iterationsSoFar + " took " +
+                        iterationTime + " milliseconds, compared to avarage " + avarageIterationTime +
+                        " millis. Total of " +
+                        runTimeSoFar / 1000 +
+                        " seconds so far. Best score so far: " +
+                        getBestScoreSoFar());
+            }
             if (System.currentTimeMillis() + avarageIterationTime > runStartTime + duration.toMillis()) {
                 LOGGER.info("Only " + (duration.toMillis() - runTimeSoFar) +
                         " millis left. Stopping iterations");
