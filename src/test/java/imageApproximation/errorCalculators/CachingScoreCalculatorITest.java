@@ -22,14 +22,14 @@ class CachingScoreCalculatorITest {
 
     @BeforeEach
     void setUp() {
-        inspected = new CachingScoreCalculator(new MeanSquareErrorScoreCalculator(SPARSITY), new ImageWrapper(
+        inspected = new CachingScoreCalculator(new MeanSquareErrorCalculator(SPARSITY), new ImageWrapper(
                 ExerciseConstants.MAX_IMAGE_SIZE, ExerciseConstants.MAX_IMAGE_SIZE), SPARSITY);
     }
 
     @Test
     void scoreCalculationIsEqualToMSEComparisonOfBothImages() {
-        assertEquals(new MeanSquareErrorScoreCalculator(SPARSITY).applyAsDouble(
-                ShapeDrawer.drawSparsely(LARGE_SHAPES_LIST, ExerciseConstants.MAX_IMAGE_SIZE,
+        assertEquals(new MeanSquareErrorCalculator(SPARSITY).applyAsDouble(
+                ShapeDrawer.drawManyShapesSparsely(LARGE_SHAPES_LIST, ExerciseConstants.MAX_IMAGE_SIZE,
                         ExerciseConstants.MAX_IMAGE_SIZE, SPARSITY), LARGE_BLANK_IMAGE),
                 inspected.applyAsDouble(LARGE_SHAPES_LIST));
     }

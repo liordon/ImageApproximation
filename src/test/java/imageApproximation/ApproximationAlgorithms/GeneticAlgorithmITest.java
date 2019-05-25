@@ -1,7 +1,7 @@
 package imageApproximation.ApproximationAlgorithms;
 
 import imageApproximation.errorCalculators.CachingScoreCalculator;
-import imageApproximation.errorCalculators.MeanSquareErrorScoreCalculator;
+import imageApproximation.errorCalculators.MeanSquareErrorCalculator;
 import imageApproximation.graphics.shapes.BasicShape;
 import imageApproximation.organisms.CircleOrganism;
 import imageApproximation.organisms.OrganismInterface;
@@ -31,9 +31,9 @@ class GeneticAlgorithmITest {
     static void setupInitialPopulations() {
         circleProgenitor = new CircleOrganism(LARGE_SHAPES_LIST, LARGEST_BOUNDARIES);
 
-        MeanSquareErrorScoreCalculator meanSquareErrorScoreCalculator = new MeanSquareErrorScoreCalculator(sparsity);
+        MeanSquareErrorCalculator meanSquareErrorCalculator = new MeanSquareErrorCalculator(sparsity);
         mseFitnessFunction =
-                new CachingScoreCalculator(meanSquareErrorScoreCalculator, LARGE_BLANK_IMAGE, sparsity);
+                new CachingScoreCalculator(meanSquareErrorCalculator, LARGE_BLANK_IMAGE, sparsity);
     }
 
     @BeforeEach

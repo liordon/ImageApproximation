@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import static imageApproximation.graphics.ColorChannel.*;
 
 public class ShapeDrawer {
-    public static ImageWrapper drawOne(BasicShape shape, ImageWrapper canvas) {
+    public static ImageWrapper drawOneShape(BasicShape shape, ImageWrapper canvas) {
         ImageWrapper result = ImageWrapper.deepCopy(canvas);
 
         List<Point> relevantPixels = shape.getAffectedPixels().stream()
@@ -17,41 +17,23 @@ public class ShapeDrawer {
                 .filter(p -> p.x < canvas.getWidth() && p.y < canvas.getHeight())
                 .collect(Collectors.toList());
         for (Point point : relevantPixels) {
-            drawSinglePixelFromShape(shape, result, point);
+            drawSinglePixelFromShape(shape, result, point.x, point.y);
         }
         return result;
     }
 
-    private static void drawSinglePixelFromShape(BasicShape shape, ImageWrapper canvas, Point point) {
-        drawSinglePixelFromShape(shape, canvas, point.x, point.y);
-    }
-
-    private static void drawSinglePixelFromShape(BasicShape shape, ImageWrapper canvas, int i, int j) {
-        int redDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(i, j), RED);
-        int greenDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(i, j), GREEN);
-        int blueDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColor(i, j), BLUE);
-        canvas.setColor(i, j,
-                new Color(
-                        (int) Math.round(canvas.getColor(i, j).getRed() + redDifference * shape.getOpacity()),
-                        (int) Math.round(canvas.getColor(i, j).getGreen() + greenDifference * shape.getOpacity()),
-                        (int) Math.round(canvas.getColor(i, j).getBlue() + blueDifference * shape.getOpacity()))
-
-        );
-    }
-
-    public static ImageWrapper drawMany(List<BasicShape> manyShapes, ImageWrapper canvas) {
-        ImageWrapper result = ImageWrapper.deepCopy(canvas);
+    public static ImageWrapper drawManyShapes(List<BasicShape> manyShapes, int width, int height) {
+        ImageWrapper result = new ImageWrapper(width, height);
 
         calculateSparsePixels(manyShapes, result, 1);
 
         return result;
     }
 
-    public static ImageWrapper drawMany(List<BasicShape> manyShapes, int width, int height) {
-        ImageWrapper result = new ImageWrapper(width, height);
-
-        calculateSparsePixels(manyShapes, result, 1);
-
+    public static ImageWrapper drawManyShapesSparsely(List<BasicShape> basicShapes, int width, int height,
+                                                      int sparsity) {
+        ImageWrapper result = new ImageWrapper(width / sparsity, height / sparsity);
+        calculateSparsePixels(basicShapes, result, sparsity);
         return result;
     }
 
@@ -67,10 +49,18 @@ public class ShapeDrawer {
         }
     }
 
-    public static ImageWrapper drawSparsely(List<BasicShape> basicShapes, int width, int height, int sparsity){
-        ImageWrapper result = new ImageWrapper(width/sparsity, height/sparsity);
-        calculateSparsePixels(basicShapes, result, sparsity);
-        return result;
+    private static void drawSinglePixelFromShape(BasicShape shape, ImageWrapper canvas, int i, int j) {
+        int redDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColorAtPixel(i, j), RED);
+        int greenDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColorAtPixel(i, j), GREEN);
+        int blueDifference = getColorDifferenceOfChannel(shape.getColor(), canvas.getColorAtPixel(i, j), BLUE);
+        canvas.setColor(i, j,
+                new Color(
+                        (int) Math.round(canvas.getColorAtPixel(i, j).getRed() + redDifference * shape.getOpacity()),
+                        (int) Math
+                                .round(canvas.getColorAtPixel(i, j).getGreen() + greenDifference * shape.getOpacity()),
+                        (int) Math.round(canvas.getColorAtPixel(i, j).getBlue() + blueDifference * shape.getOpacity()))
+
+        );
     }
 }
 

@@ -8,11 +8,11 @@ import java.util.function.ToDoubleBiFunction;
 
 import static imageApproximation.graphics.ColorChannel.getColorDifferenceOfChannel;
 
-public class MeanSquareErrorScoreCalculator implements ToDoubleBiFunction<ImageWrapper, ImageWrapper> {
+public class MeanSquareErrorCalculator implements ToDoubleBiFunction<ImageWrapper, ImageWrapper> {
     private final int sparsity;
     static final int MAX_POSSIBLE_SCORE = ExerciseConstants.MAX_COLOR_VALUE * ExerciseConstants.MAX_COLOR_VALUE;
 
-    public MeanSquareErrorScoreCalculator(int sparsity) {
+    public MeanSquareErrorCalculator(int sparsity) {
         this.sparsity = sparsity;
     }
 
@@ -30,8 +30,8 @@ public class MeanSquareErrorScoreCalculator implements ToDoubleBiFunction<ImageW
             for (int j = 0; j < verified.getHeight(); j++) {
                 for (ColorChannel channel : ColorChannel.values()) {
                     int channelDiff =
-                            getColorDifferenceOfChannel(verified.getColor(i, j),
-                                    target.getColor(i * sparsity, j * sparsity), channel);
+                            getColorDifferenceOfChannel(verified.getColorAtPixel(i, j),
+                                    target.getColorAtPixel(i * sparsity, j * sparsity), channel);
                     sum += Math.pow(channelDiff, 2.);
                 }
             }

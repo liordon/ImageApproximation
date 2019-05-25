@@ -60,7 +60,7 @@ class GeneticAlgorithmUTest {
 
     @Test
     void canReturnSurvivorPopulationWhenRequested() {
-        assertEquals(SURVIVAL_SIZE, inspected.getPopulation().size());
+        assertEquals(SURVIVAL_SIZE, inspected.getSurvivors().size());
     }
 
     @Test
@@ -76,7 +76,7 @@ class GeneticAlgorithmUTest {
     @Test
     void whenAdvancingAGenerationTheFittestSpecimenSurvive() {
         inspected.advanceGeneration();
-        List<OrganismInterface> newPopulation = inspected.getPopulation();
+        List<OrganismInterface> newPopulation = inspected.getSurvivors();
 
         for (OrganismInterface organism : newPopulation) {
             assertTrue(fittestSpecimen.contains(organism));
@@ -88,7 +88,7 @@ class GeneticAlgorithmUTest {
         inspected.advanceGeneration();
 
         for (OrganismInterface organism : fittestSpecimen) {
-            assertTrue(inspected.getPopulation().contains(organism));
+            assertTrue(inspected.getSurvivors().contains(organism));
             verify(organism, atLeastOnce()).crossBreed(any());
         }
     }
@@ -105,7 +105,7 @@ class GeneticAlgorithmUTest {
     @Test
     void whenAdvancingAGenerationOnlyTheSurvivorsAreKept() {
         inspected.advanceGeneration();
-        assertEquals(SURVIVAL_SIZE, inspected.getPopulation().size());
+        assertEquals(SURVIVAL_SIZE, inspected.getSurvivors().size());
     }
 
     @Test
@@ -114,7 +114,7 @@ class GeneticAlgorithmUTest {
         GeneticAlgorithm inspected =
                 new GeneticAlgorithm(SIZABLE_POPULATION, SURVIVAL_SIZE, new MockOrganism(), x -> 0);
         inspected.advanceGeneration();
-        Set<OrganismInterface> populationSet = new HashSet<>(inspected.getPopulation());
+        Set<OrganismInterface> populationSet = new HashSet<>(inspected.getSurvivors());
         assertEquals(SURVIVAL_SIZE, populationSet.size());
     }
 }

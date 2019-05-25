@@ -12,7 +12,7 @@ public abstract class AnytimeAlgorithm extends Observable {
     private static final Logger LOGGER = LogManager.getLogger(AnytimeAlgorithm.class);
     private int iterationsSoFar;
 
-    public abstract void iterateOnce();
+    protected abstract void iterateOnce();
 
     public List<BasicShape> runSetTime(Duration duration) {
         iterationsSoFar = 0;

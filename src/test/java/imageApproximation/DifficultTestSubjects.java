@@ -26,6 +26,6 @@ public enum DifficultTestSubjects {
         for (int i = 0; i < ExerciseConstants.MAX_ALLOWED_SHAPES; i++) {
             LARGE_SHAPES_LIST.add(new BasicCircle(10*i, Color.WHITE, 0.5, i, i));
         }
-        LARGE_CIRCLE_IMAGE = ShapeDrawer.drawMany(LARGE_SHAPES_LIST, LARGE_BLANK_IMAGE);
+        LARGE_CIRCLE_IMAGE = ShapeDrawer.drawManyShapes(LARGE_SHAPES_LIST, ExerciseConstants.MAX_IMAGE_SIZE, ExerciseConstants.MAX_IMAGE_SIZE);
     }
 }

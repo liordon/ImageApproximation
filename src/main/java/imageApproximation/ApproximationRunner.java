@@ -4,7 +4,8 @@ import imageApproximation.ApproximationAlgorithms.AnytimeAlgorithm;
 import imageApproximation.ApproximationAlgorithms.GeneticAlgorithm;
 import imageApproximation.dmonstrationUI.DemonstrationFrame;
 import imageApproximation.errorCalculators.CachingScoreCalculator;
-import imageApproximation.errorCalculators.MeanSquareErrorScoreCalculator;
+import imageApproximation.errorCalculators.MeanSquareErrorCalculator;
+import imageApproximation.errorCalculators.ShapeListScoreCalculator;
 import imageApproximation.graphics.ImageWrapper;
 import imageApproximation.graphics.shapes.BasicShape;
 import imageApproximation.graphics.shapes.ShapeBoundaries;
@@ -30,9 +31,9 @@ public class ApproximationRunner {
     private static final int SPARSITY = 20;
     private static final int REFRESH_RATE = 500;
     private static final int MILLIS_IN_MINUTE = 60_000;
-    private static final int generationSize = 1000;
-    private static final int survivalSize = 50;
-    private static final int NUMBER_OF_GENES = 0; //ExerciseConstants.MAX_ALLOWED_SHAPES / 2;
+    private static final int GENERATION_SIZE = 1000;
+    private static final int SURVIVAL_SIZE = 50;
+    private static final int STARTING_NUMBER_OF_GENES = 0; //ExerciseConstants.MAX_ALLOWED_SHAPES / 2;
     private static DemonstrationFrame demonstrationFrame;
     private static int imageWidth;
     private static int imageHeight;
@@ -47,29 +48,30 @@ public class ApproximationRunner {
             demonstrationFrame = new DemonstrationFrame(imageReading);
             imageWidth = imageReading.getWidth();
             imageHeight = imageReading.getHeight();
-            demonstrationFrame.setApproximatedImage(new ImageWrapper(imageWidth, imageHeight).toBufferedImage());
+            demonstrationFrame.updateApproximatedImage(new ImageWrapper(imageWidth, imageHeight).toBufferedImage());
             demonstrationFrame.pack();
             demonstrationFrame.setVisible(true);
             ImageWrapper targetImage = new ImageWrapper(imageReading);
 
             LOGGER.info("defining fitness and boundaries");
             ToDoubleFunction<List<BasicShape>> scoreCalculator =
-                    new CachingScoreCalculator(new MeanSquareErrorScoreCalculator(SPARSITY), targetImage,
-                            SPARSITY);
+                    new CachingScoreCalculator(
+                            new ShapeListScoreCalculator(new MeanSquareErrorCalculator(SPARSITY), targetImage,
+                                    SPARSITY));
 
             ShapeBoundaries boundaries =
                     new ShapeBoundaries(imageWidth + 2, imageHeight + 2, Math.max(imageWidth, imageHeight) * 2);
             long startEvolutionTime = System.currentTimeMillis();
-            OrganismInterface progenitor = new CircleOrganism(boundaries, NUMBER_OF_GENES);
+            OrganismInterface progenitor = new CircleOrganism(boundaries, STARTING_NUMBER_OF_GENES);
 
             LOGGER.info("creating initial population");
-            GeneticAlgorithm algorithm = new GeneticAlgorithm(generationSize,
-                    survivalSize, progenitor, scoreCalculator);
+            GeneticAlgorithm algorithm = new GeneticAlgorithm(GENERATION_SIZE,
+                    SURVIVAL_SIZE, progenitor, scoreCalculator);
             updateUIApproximatedShape(algorithm);
 
             LOGGER.info("starting evolution process");
 
-            Future<List<BasicShape>> finalResult = runAlgorithmForSetTime(algorithm);
+            Future<List<BasicShape>> finalResult = runAlgorithmForSetTime(algorithm, Duration.ofMinutes(5));
 
             while (!finalResult.isDone()) {
                 try {
@@ -85,7 +87,7 @@ public class ApproximationRunner {
                             (System.currentTimeMillis() - startEvolutionTime) / MILLIS_IN_MINUTE + " minutes!");
 
             ImageIO.write(
-                    ShapeDrawer.drawMany(algorithm.getBestResultSoFar(), new ImageWrapper(300, 225)).toBufferedImage(),
+                    ShapeDrawer.drawManyShapes(algorithm.getBestResultSoFar(), imageWidth, imageHeight).toBufferedImage(),
                     "jpg",
                     new File("out.jpg"));
             System.out.println("best result got a score of " + scoreCalculator.applyAsDouble(
@@ -97,17 +99,17 @@ public class ApproximationRunner {
         }
     }
 
-    private static Future<List<BasicShape>> runAlgorithmForSetTime(GeneticAlgorithm algorithm) {
-        return executorService.submit(() -> algorithm.runSetTime(Duration.ofMinutes(5)));
+    private static Future<List<BasicShape>> runAlgorithmForSetTime(GeneticAlgorithm algorithm, Duration duration) {
+        return executorService.submit(() -> algorithm.runSetTime(duration));
     }
 
     private static void updateUIApproximatedShape(AnytimeAlgorithm algorithm) {
         executorService.execute(() -> {
                     demonstrationFrame
-                            .setApproximatedImage(
-                                    ShapeDrawer.drawMany(algorithm.getBestResultSoFar(), imageWidth, imageHeight)
+                            .updateApproximatedImage(
+                                    ShapeDrawer.drawManyShapes(algorithm.getBestResultSoFar(), imageWidth, imageHeight)
                                             .toBufferedImage());
-                    demonstrationFrame.setNumberOfIterationsAndHighestScore(algorithm.getNumberOfIterationsSoFar(),
+                    demonstrationFrame.updateProgress(algorithm.getNumberOfIterationsSoFar(),
                             algorithm.getBestScoreSoFar());
                 }
         );

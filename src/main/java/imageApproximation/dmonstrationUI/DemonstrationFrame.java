@@ -53,19 +53,13 @@ public class DemonstrationFrame extends JFrame {
         DemonstrationFrame frame = new DemonstrationFrame(
                 "src/main/resources/golden_bell-200x200.jpg");
         frame.setVisible(true);
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-//        frame.setApproximatedImage(null);
     }
 
-    public void setApproximatedImage(BufferedImage imageIcon) {
+    public void updateApproximatedImage(BufferedImage imageIcon) {
         approxImageLabel.setIcon(new ImageIcon(imageIcon));
     }
 
-    public void setNumberOfIterationsAndHighestScore(int numberOfIterations, double highestScore){
+    public void updateProgress(int numberOfIterations, double highestScore){
         topLabel.setText("iteration #" + numberOfIterations + " highest score: " + highestScore);
     }
 }

@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-class MeanSquareErrorScoreCalculatorTest {
+class MeanSquareErrorCalculatorTest {
 
-    private static MeanSquareErrorScoreCalculator inspected;
+    private static MeanSquareErrorCalculator inspected;
 
 
     private static void assertApplicationSymmetricallyEquals(double expected, ImageWrapper arg1, ImageWrapper arg2) {
@@ -23,13 +23,13 @@ class MeanSquareErrorScoreCalculatorTest {
 
     @BeforeAll
     static void setUp() {
-        inspected = new MeanSquareErrorScoreCalculator(1);
+        inspected = new MeanSquareErrorCalculator(1);
     }
 
     @Test
     void comparingAnImageToItselfShouldReturnBestPossibleScore() {
         ImageWrapper example = new ImageWrapper(1, 1);
-        assertApplicationSymmetricallyEquals(MeanSquareErrorScoreCalculator.MAX_POSSIBLE_SCORE, example, example);
+        assertApplicationSymmetricallyEquals(MeanSquareErrorCalculator.MAX_POSSIBLE_SCORE, example, example);
     }
 
     @Test
@@ -46,11 +46,11 @@ class MeanSquareErrorScoreCalculatorTest {
         slightlyGreen.setColor(0, 0, new Color(0, 1, 0));
         slightlyBlue.setColor(0, 0, new Color(0, 0, 1));
 
-        assertApplicationSymmetricallyEquals(MeanSquareErrorScoreCalculator.MAX_POSSIBLE_SCORE - 1. / 3,
+        assertApplicationSymmetricallyEquals(MeanSquareErrorCalculator.MAX_POSSIBLE_SCORE - 1. / 3,
                 GraphicsForTests.BLACK_PIXEL, slightlyRed);
-        assertApplicationSymmetricallyEquals(MeanSquareErrorScoreCalculator.MAX_POSSIBLE_SCORE - 1. / 3,
+        assertApplicationSymmetricallyEquals(MeanSquareErrorCalculator.MAX_POSSIBLE_SCORE - 1. / 3,
                 GraphicsForTests.BLACK_PIXEL, slightlyGreen);
-        assertApplicationSymmetricallyEquals(MeanSquareErrorScoreCalculator.MAX_POSSIBLE_SCORE - 1. / 3,
+        assertApplicationSymmetricallyEquals(MeanSquareErrorCalculator.MAX_POSSIBLE_SCORE - 1. / 3,
                 GraphicsForTests.BLACK_PIXEL, slightlyBlue);
     }
 
@@ -75,7 +75,7 @@ class MeanSquareErrorScoreCalculatorTest {
         blackAndBlack.setColor(0, 0, Color.BLACK);
         blackAndBlack.setColor(0, 1, Color.BLACK);
 
-        assertApplicationSymmetricallyEquals(MeanSquareErrorScoreCalculator.MAX_POSSIBLE_SCORE / 2., blackAndBlack,
+        assertApplicationSymmetricallyEquals(MeanSquareErrorCalculator.MAX_POSSIBLE_SCORE / 2., blackAndBlack,
                 blackAndWhite);
     }
 }

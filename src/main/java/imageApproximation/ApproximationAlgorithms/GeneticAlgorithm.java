@@ -14,7 +14,6 @@ public class GeneticAlgorithm extends AnytimeAlgorithm {
 
     private final int generationSize;
     private final int survivorsSize;
-    private final int diversityFactor = 5;
     private final ToDoubleFunction<List<BasicShape>> fitnessFunction;
     private final Random random = new Random();
     private List<OrganismInterface> survivors;
@@ -75,7 +74,7 @@ public class GeneticAlgorithm extends AnytimeAlgorithm {
 
     }
 
-    List<OrganismInterface> getPopulation() {
+    List<OrganismInterface> getSurvivors() {
         return survivors;
     }
 
@@ -140,20 +139,11 @@ public class GeneticAlgorithm extends AnytimeAlgorithm {
         lowliestMutant = newGeneration.get(survivorsSize - 1);
         lowestFitness = calculateFitness(lowliestMutant);
         survivors.clear();
-        ensureDiversity(newGeneration, misfits);
-    }
-
-    private void ensureDiversity(List<OrganismInterface> newGeneration, List<OrganismInterface> misfits) {
-        int minPossibleDiversityIndex =
-                Math.min(((survivorsSize * (diversityFactor + 1)) / diversityFactor), misfits.size());
-
-        survivors.addAll(newGeneration.subList(0, survivorsSize - minPossibleDiversityIndex));
-        survivors.addAll(misfits.subList(0, minPossibleDiversityIndex));
-//        survivors.addAll(newGeneration.subList(0, survivorsSize));
+        survivors.addAll(newGeneration.subList(0, survivorsSize));
     }
 
     @Override
-    public void iterateOnce() {
+    protected void iterateOnce() {
         advanceGeneration();
     }
 

@@ -4,18 +4,18 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ImageWrapper {
-    private final Color[][] image;
+    private final Color[][] pixelArray;
 
-    public ImageWrapper(Color[][] image) {
-        this.image = image;
+    public ImageWrapper(Color[][] pixelArray) {
+        this.pixelArray = pixelArray;
     }
 
     public static ImageWrapper deepCopy(ImageWrapper other) {
         final Color[][] image = new Color[other.getWidth()][other.getHeight()];
         for (int i = 0; i < other.getHeight(); i++) {
             for (int j = 0; j < other.getHeight(); j++) {
-                if (other.image[i][j] != null && other.image[i][j] != Color.BLACK) {
-                    image[i][j] = other.image[i][j];
+                if (other.pixelArray[i][j] != null && other.pixelArray[i][j] != Color.BLACK) {
+                    image[i][j] = other.pixelArray[i][j];
                 }
             }
         }
@@ -23,35 +23,35 @@ public class ImageWrapper {
     }
 
     public ImageWrapper(BufferedImage image) {
-        this.image = new Color[image.getWidth()][image.getHeight()];
+        this.pixelArray = new Color[image.getWidth()][image.getHeight()];
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 final int rgb = image.getRGB(i, j);
                 if ( rgb != Color.BLACK.getRGB()) {
-                    this.image[i][j] = new Color(rgb);
+                    this.pixelArray[i][j] = new Color(rgb);
                 }
             }
         }
     }
 
     public ImageWrapper(int width, int height) {
-        image = new Color[width][height];
+        pixelArray = new Color[width][height];
     }
 
     public void setColor(int x, int y, Color color) {
-        image[x][y] = color;
+        pixelArray[x][y] = color;
     }
 
     public int getWidth() {
-        return image.length;
+        return pixelArray.length;
     }
 
     public int getHeight() {
-        return image[0].length;
+        return pixelArray[0].length;
     }
 
-    public Color getColor(int x, int y) {
-        Color result = image[x][y];
+    public Color getColorAtPixel(int x, int y) {
+        Color result = pixelArray[x][y];
         return result == null ? Color.BLACK : result;
     }
 
@@ -73,7 +73,7 @@ public class ImageWrapper {
             }
             for (int i = 0; i < getWidth(); i++) {
                 for (int j = 0; j < getHeight(); j++) {
-                    if (!this.getColor(i, j).equals(castedOther.getColor(i, j))) {
+                    if (!this.getColorAtPixel(i, j).equals(castedOther.getColorAtPixel(i, j))) {
                         return false;
                     }
                 }
@@ -84,9 +84,9 @@ public class ImageWrapper {
 
     public BufferedImage toBufferedImage() {
         BufferedImage result = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
-        for (int i = 0; i < image.length; i++) {
-            for (int j = 0; j < image[0].length; j++) {
-                result.setRGB(i, j, getColor(i, j).getRGB());
+        for (int i = 0; i < pixelArray.length; i++) {
+            for (int j = 0; j < pixelArray[0].length; j++) {
+                result.setRGB(i, j, getColorAtPixel(i, j).getRGB());
             }
         }
         return result;
