@@ -31,19 +31,20 @@ class AnytimeAlgorithmTest {
         }
 
         @Override
-        protected List<BasicShape> getBestResultSoFar() {
+        public List<BasicShape> getBestResultSoFar() {
             return null;
         }
 
         @Override
-        protected double getBestScoreSoFar() {
+        public double getBestScoreSoFar() {
             return 0;
         }
     };
 
     @Test
     void alwaysStopsShortOfTimeout() {
-        assertTimeout(Duration.ofMillis(98), () -> inspected.runSetTime(Duration.ofMillis(100)));
+        final Duration duration = Duration.ofMillis(100);
+        assertTimeout(duration, () -> inspected.runSetTime(duration));
     }
 
     @Test

@@ -10,11 +10,12 @@ import java.util.Observable;
 
 public abstract class AnytimeAlgorithm extends Observable {
     private static final Logger LOGGER = LogManager.getLogger(AnytimeAlgorithm.class);
+    private int iterationsSoFar;
 
     public abstract void iterateOnce();
 
     public List<BasicShape> runSetTime(Duration duration) {
-        int iterationsSoFar = 0;
+        iterationsSoFar = 0;
         long avarageIterationTime = 0;
         long runStartTime = System.currentTimeMillis();
         while (true) {
@@ -37,7 +38,11 @@ public abstract class AnytimeAlgorithm extends Observable {
         }
     }
 
-    protected abstract List<BasicShape> getBestResultSoFar();
+    public abstract List<BasicShape> getBestResultSoFar();
 
-    protected abstract double getBestScoreSoFar();
+    public abstract double getBestScoreSoFar();
+
+    public int getNumberOfIterationsSoFar() {
+        return iterationsSoFar;
+    }
 }

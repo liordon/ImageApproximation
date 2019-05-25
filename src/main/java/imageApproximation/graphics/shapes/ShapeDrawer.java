@@ -47,6 +47,14 @@ public class ShapeDrawer {
         return result;
     }
 
+    public static ImageWrapper drawMany(List<BasicShape> manyShapes, int width, int height) {
+        ImageWrapper result = new ImageWrapper(width, height);
+
+        calculateSparsePixels(manyShapes, result, 1);
+
+        return result;
+    }
+
     private static void calculateSparsePixels(List<BasicShape> manyShapes, ImageWrapper result, int sparsity) {
         for (int i = 0; i < result.getWidth(); i++) {
             for (int j = 0; j < result.getHeight(); j++) {

@@ -156,12 +156,12 @@ public class GeneticAlgorithm extends AnytimeAlgorithm {
     }
 
     @Override
-    protected List<BasicShape> getBestResultSoFar() {
+    public List<BasicShape> getBestResultSoFar() {
         return fittestOrganism.getGenome();
     }
 
     @Override
-    protected double getBestScoreSoFar() {
+    public double getBestScoreSoFar() {
         return highestFitness;
     }
 }

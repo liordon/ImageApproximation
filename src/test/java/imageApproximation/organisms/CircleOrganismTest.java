@@ -47,7 +47,7 @@ class CircleOrganismTest {
         inspected = (CircleOrganism) inspected.spawnMutant();
         inspected = (CircleOrganism) inspected.spawnMutant();
 
-        assertEquals(3, inspected.getGenome().size());
+        assertTrue(3 < inspected.getGenome().size());
     }
 
     @Test
@@ -106,7 +106,7 @@ class CircleOrganismTest {
     }
 
     @Test
-    void mutantOfFullGenomeOrganismHasBetween10and50PercentMutations() {
+    void mutantOfFullGenomeOrganismHasBetween10And70PercentMutations() {
         CircleOrganism parent1 = new CircleOrganism(fullGenome1, shapeBoundaries);
         OrganismInterface mutant = parent1.spawnMutant();
 
@@ -114,15 +114,14 @@ class CircleOrganismTest {
         List<BasicShape> mutantGenome = mutant.getGenome();
 
         int numberOfInheritedGenes = 0;
-        for (BasicShape gene :
-                parentGenome) {
+        for (BasicShape gene : parentGenome) {
             if (mutantGenome.contains(gene)) {
                 numberOfInheritedGenes++;
             }
         }
 
-        assertTrue(numberOfInheritedGenes < ExerciseConstants.MAX_ALLOWED_SHAPES * .9);
-        assertTrue(numberOfInheritedGenes > ExerciseConstants.MAX_ALLOWED_SHAPES * .5);
+        assertTrue(numberOfInheritedGenes <= ExerciseConstants.MAX_ALLOWED_SHAPES * .9);
+        assertTrue(numberOfInheritedGenes >= ExerciseConstants.MAX_ALLOWED_SHAPES * .3);
     }
 
     @Test

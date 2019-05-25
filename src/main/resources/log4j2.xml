@@ -20,7 +20,7 @@
         </RandomAccessFile>
     </Appenders>
     <Loggers>
-        <Root level="debug">
+        <Root level="info">
             <AppenderRef ref="RandomAccessFile" />
 <!--            <AppenderRef ref="FILE" />-->
         </Root>

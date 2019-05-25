@@ -34,8 +34,7 @@ public class MeanSquareErrorScoreCalculator implements ToDoubleBiFunction<ImageW
                 }
             }
         }
-        return MAX_POSSIBLE_SCORE - (sum / 3. / (verified.getWidth() * verified.getHeight())) -
-                ExerciseConstants.MAX_ALLOWED_SHAPES * 255;
+        return MAX_POSSIBLE_SCORE - (sum / 3. / (verified.getWidth() * verified.getHeight()));
     }
 
 }
